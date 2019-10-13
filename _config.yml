@@ -12,7 +12,7 @@ github_repo: "https://github.com/KID-1912/KID-1912.github.io.git" # you code rep
 # Sidebar settings
 sidebar: true                           # whether or not using Sidebar.
 sidebar-about-description: "coding改变生活，技术改变世界。"
-sidebar-avatar: /img/avatar_binggan.jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
+sidebar-avatar: /img/user.jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
 
 
 

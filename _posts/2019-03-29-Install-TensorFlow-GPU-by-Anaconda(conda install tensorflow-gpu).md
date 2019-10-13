@@ -9,7 +9,7 @@ catalog: true
 tags:
     - ubuntu
     - TensorFlow
-    - 深度学习
+    - 测试修改
     - CUDA
 ---
 

@@ -1,9 +1,9 @@
 # Site settings
-title: My Blog
-SEOTitle: 我的博客 | My Blog
+title: KID-1912’s Blog
+SEOTitle: KID-1912’s博客 | KID-1912’s Blog
 header-img: img/post-bg-desk.jpg
-email: 暂无
-description: "写一句你想写的话"
+email: heyutongxue@gmail.com
+description: "写给自己的博客笔记"
 keyword: "我的博客"
 url: "http://KID-1912.github.io"          # your host, for absolute URL
 baseurl: ""      # for example, '/blog' if your blog hosted on 'host/blog'
@@ -11,7 +11,7 @@ github_repo: "https://github.com/KID-1912/KID-1912.github.io.git" # you code rep
 
 # Sidebar settings
 sidebar: true                           # whether or not using Sidebar.
-sidebar-about-description: "苟利国家生死以，岂因祸福避趋之~"
+sidebar-about-description: "coding改变生活，技术改变世界。"
 sidebar-avatar: /img/avatar_binggan.jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
 
 
@@ -19,8 +19,8 @@ sidebar-avatar: /img/avatar_binggan.jpg      # use absolute URL, seeing it's use
 # SNS settings
 RSS: false
 # weibo_username:     暂无
-zhihu_username:     暂无
-github_username:    暂无
+zhihu_username:     黑羽同学
+github_username:    KID-1912
 facebook_username:  暂无
 jianshu_username:   暂无
 #twitter_username:   暂无

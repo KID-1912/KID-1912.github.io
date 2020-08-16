@@ -61,4 +61,4 @@ https://api.example.com/v1/employees
 
 
 
-部分转载自:
+部分转载自:阮一峰博客——RESTful API 设计指南   http://www.ruanyifeng.com/blog/2014/05/restful_api.html

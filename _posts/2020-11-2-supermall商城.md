@@ -62,7 +62,7 @@ home组件created时调用 -> home.js发送请求 -> request.js请求方法
 5. swipper
 - 组件结构
     + .swipper -> .swipper-item -> slot轮播内容
-    + swipper文件夹index.js用于整体引用swipper下多个父子组件
+    + swipper文件夹index.js用于整体引用swipper下多个父子组件  
 - 问题
     + 浏览器窗口切换，轮播图加速；使用doucment的visibilitychange解决
 
@@ -207,7 +207,7 @@ home组件created时调用 -> home.js发送请求 -> request.js请求方法
 
 12. mixin混入backTop功能
 
-### 购物车开发
+#### 购物车开发
 1. detail页点击加入购物车
     + 添加点击事件
     + 添加商品信息至vuex状态管理
@@ -234,7 +234,7 @@ home组件created时调用 -> home.js发送请求 -> request.js请求方法
         - 判断商品选中状态切换全选按钮选中
         - 全选按钮点击选中/反选商品
 
-### 分类页开发
+#### 分类页开发
 1. 页面结构
     + 顶部navbar
     + 左侧tab栏

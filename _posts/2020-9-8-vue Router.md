@@ -89,6 +89,14 @@ routes: [
 ]
 ```
 
+- 阻止路由跳转自身时报错
+```
+const originalPush = VueRouter.prototype.push
+   VueRouter.prototype.push = function push(location) {
+   return originalPush.call(this, location).catch(err => err)
+}
+```
+
 - 路径模式：history/hash
 默认的路由路径修改模式是基于URL的Hash模式,路径在会出现'#/'的部分,可以通过配置修改为通过pushState的history的模式
 ```
@@ -287,7 +295,9 @@ matched: Array类型值，包含当前路由的所有嵌套路径片段的路由
 ```
 
 ### keep-alive缓存router组件
+
 vue默认包含一个可直接使用的keep-alive内置组件,用于对内部组件进行缓存,并为缓存的组件提供了activated和deactivated方法
+
 - 基本使用
 ```
 1. 缓存APP的组件
@@ -308,6 +318,7 @@ vue默认包含一个可直接使用的keep-alive内置组件,用于对内部组
 ```
 
 - include和exclude
+
 指定缓存组件name值/指定不缓存组件,属性值为指定组件的name值
 ```
   <keep-alive exclude="Profile">

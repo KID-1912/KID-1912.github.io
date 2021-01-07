@@ -98,6 +98,7 @@ const originalPush = VueRouter.prototype.push
 ```
 
 - 路径模式：history/hash
+
 默认的路由路径修改模式是基于URL的Hash模式,路径在会出现'#/'的部分,可以通过配置修改为通过pushState的history的模式
 ```
 new Route({
@@ -143,6 +144,7 @@ this.$router.back()
 
 ### 动态路由
 Router允许1个页面组件映射多个路径,这种可变的路由即动态路由
+
 1. 配置动态路由映射
 ```
 routes: [
@@ -295,7 +297,6 @@ matched: Array类型值，包含当前路由的所有嵌套路径片段的路由
 ```
 
 ### keep-alive缓存router组件
-
 vue默认包含一个可直接使用的keep-alive内置组件,用于对内部组件进行缓存,并为缓存的组件提供了activated和deactivated方法
 
 - 基本使用
@@ -325,3 +326,16 @@ vue默认包含一个可直接使用的keep-alive内置组件,用于对内部组
     <router-view/>
   </keep-alive>
 ```
+
+- 控制滚动行为
+  1. 保留路由滚动的位置，必须对该路由组件keep-alive
+  2. 创建router实例时，添加滚动控制
+  ```
+  scrollBehavior (to, from, savedPosition) {
+  if (savedPosition) {  // 如果路由被keep-alive，则切换为原来位置
+    return savedPosition
+  } else {
+    return x: 0, y: 0   // 所有未缓存的路由切换直接置顶
+  }
+}
+  ```

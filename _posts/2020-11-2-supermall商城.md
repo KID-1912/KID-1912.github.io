@@ -5,7 +5,7 @@ subtitle:   一款仿蘑菇街商城的WebApp，使用vue全家桶
 date:       2020-11-2
 author:     page
 header-img: img/post-bg-re-vs-ng2.jpg
-catalog: true
+catalog:    true
 tags:
     - vue项目
     - 项目日志

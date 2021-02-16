@@ -81,38 +81,36 @@ tags:
 ### 完成回调
 - 服务端
 ```
-var io = require('socket.io')(80);
-
-io.on('connection', function (socket) {
-  socket.on('ferret', function (name, fn) { // 接受回调参
-    fn('success'); // 执行带有参数的回调
-  });
-});
+    var io = require('socket.io')(80);
+    io.on('connection', function (socket) {
+      socket.on('ferret', function (name, fn) { // 接受回调参
+        fn('success'); // 执行带有参数的回调
+      });
+    });
 ```
 
 - 前端
 ```
-<script>
-  var socket = io();
-  socket.on('connect', function () { connect能同时监听连接和事件
-    socket.emit('ferret', 'tobi', function (data) { //确认后端处理完成并执行回调
-      console.log(data); // 'success'
-    });
-  });
-</script>
+    <script>
+      var socket = io();
+      socket.on('connect', function () { connect能同时监听连接和事件
+        socket.emit('ferret', 'tobi', function (data) { //确认后端处理完成并执行回调
+          console.log(data); // 'success'
+        });
+      });
+    </script>
 ```
 
 ### 广播消息
 ```
-io.on('connection', function (socket) {
-  socket.broadcast.emit('user connected');  //broadcast除去当前client端
-});
+    io.on('connection', function (socket) {
+      socket.broadcast.emit('user connected');  //broadcast除去当前client端
+    });
 ```
 
 ### Socket
 - socket.id
     + 一个独一无二的针对当前会话socket的标志，来自下行客户端。（返回字符串）
-
 - socket.rooms
     + 当前客户端所在的房间号（返回对象）
 ```

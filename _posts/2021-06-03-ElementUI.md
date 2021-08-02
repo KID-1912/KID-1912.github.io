@@ -32,7 +32,7 @@ tags:
 - \<el-image>：图片
 - \<el-drawer>：抽屉
 
-### 样式布局
+### 弹性布局
 
 - \<el-row> + \<el-col>
   - \<el-col :span="12">（分为24份span）
@@ -42,11 +42,13 @@ tags:
   - \<el-col :xs="8" :sm="6" :md="4" :lg="3" :xl="1">（响应式）
   - \<el-row :span="6" class="hidden-xs-only/...">（响应式显示隐藏类;import 'element-ui/lib/theme-chalk/display.css';）
 
-## 常见需求
 
-### 分页
 
-- pagination组件
+## 组件
+
+### Pagination分页
+
+- 组件
 
 ```html
   <el-pagination
@@ -87,9 +89,13 @@ fetch(){
 }
 ```
 
-### 单文件上传
 
-- upload组件
+
+## Upload上传
+
+#### 单文件上传
+
+- Upload组件
 
 ```html
 <!-- 此处为分离上传操作 -->
@@ -171,7 +177,11 @@ uploadReady: false, // 上传文件就绪
  }
 ```
 
-### 弹窗合并
+
+
+### 弹窗Dialog
+
+#### 弹窗合并
 
 - 组件
 
@@ -216,21 +226,60 @@ closeDialog() {
   this.dialogType == "dialog1" && (关闭前处理);
   ...
   this.dialogType = "";
-},
+}
 ```
 
-## 错误响应处理
-在后台项目对错误处理只分对特殊错误处理与普通错误返回，C端项目分为特殊错误处理，内部错误信息统一返回
+### Table表格
 
-- 响应拦截判断
+#### 重复列表格
 
-```js
-request.interceptors.response.use(response => {
-  const {
-    data: { retCode, msg, model }
-  } = response;
-  // if 特殊错误码判断并处理
-  // else if 非成功码（普通状态码），返回reject(data)
-  // else 响应成功，返回resolve(data)
-}, error => ...网络错误)
-```
+| 姓名 | 分数 | 姓名 | 分数 | 姓名 | 分数 |
+| :--: | :--: | :--: | :--: | :--: | :--: |
+| xxx  |  **  | xxx  |  **  |  xx  |  **  |
+| xxx  |  **  | xxx  |  **  |  xx  |  **  |
+
+1. 假设tableList为表格数据，基于tableList.length计算出最终显示行数，行数由数组lineLength决定
+
+   ```js
+   // 非空时计算行数，空数组则默认按空数据显示表格
+   if (this.tableList.length > 0) {
+     let num = Math.ceil(this.tableList.length / 3); // 3列复用
+     this.lineLength = new Array(num).fill("");
+   }
+   ```
+
+2. $index行索引 + index数据索引计算出位置对应显示数据
+
+   ```html
+   <el-table :data="lineLength">
+     <template v-for="(num, index) in 3">
+       <el-table-column label="名称" :key="`${num}.name`">
+         <template #default="{$index}">
+           <div v-if="$index * 3 + index < tableList.length">
+               {{ tableList[$index * 3 + index].name }}
+            </div>
+           <span v-else>-</span>
+         </template>
+       </el-table-column>
+       <el-table-column label="数量" :key="`${num}.count`">
+         <template #default="{$index}">
+           <div v-if="$index * 3 + index < tableList.length">
+               {{ tableList[$index * 3 + index].count }}
+            </div>
+           <span v-else>-</span>
+         </template>
+       </el-table-column>
+     </template>
+   </el-table>
+   ```
+
+
+
+### Form表单
+
+#### 检验
+
+- el-form:model + el-form-item:prop + :rules/required检验
+- prop支持:prop="属性.index.属性"字符串链式访问
+- form-item自定义校验：required/rules前置检验 + :error="error变量" + 校验时nextTrick修改error变量 + form-item:foucs/每次检验前 重置error变量
+

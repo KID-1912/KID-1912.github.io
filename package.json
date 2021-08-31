@@ -1,14 +1,12 @@
 {
-    "name": "wp-blog",
-    "title": "WP Blog",
-    "author": "WP <im.wangpei@outlook.com>",
+    "name": "KID-1912-blog",
+    "title": "KID-1912 Blog",
+    "author": "KID-1912 <heyutongxue@gmail.com.com>",
     "version": "1.7.0",
-    "homepage": "http://xiaokeai18.github.io",
+    "homepage": "https://kid-1912.github.io/",
     "repository": {
         "type": "git",
-        "url": "https://github.com/xiaokeai18/xiaokeai18.github.io"
     },
-    "bugs": "https://github.com/xiaokeai18/xiaokeai18.github.io/issues",
     "devDependencies": {
         "grunt": "~0.4.5",
         "grunt-contrib-less": "~0.11.4",

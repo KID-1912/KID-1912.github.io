@@ -15,6 +15,7 @@ tags:
 ### 前端路由
 为SPA的每个视图(网页组件)匹配特殊的url，形成映射关系；通过监听url来分发进行刷新、前进、后退、切换映射的页面；  
 这要求路由必须做到以下两点：  
+
 　　1. 改变url且不让浏览器像服务器发送请求。  
 　　2. 可以监听到url的变化
 解决方案包括hash模式和history模式
@@ -22,12 +23,12 @@ tags:
 ### vue Router安装与配置
 #### 安装
 - npm安装vue Router
-```
+```sh
 npm install vue-router --save
 ```
 
 - vue CLI项目安装
-```
+```sh
 vue Router (y/n) : y    ----vue ClI2
 (*) vue Router          ----vue ClI3
 ```
@@ -41,7 +42,7 @@ vue Router (y/n) : y    ----vue ClI2
 - 使用
     + 1.在components目录创建.vue路由组件文件
     + 2.router/index.js配置路由组件的路径
-    ```
+    ```js
     import Home from '../components/home.vue'   //引入创建的路由组件
     export default new Router({
       routes: [
@@ -60,7 +61,7 @@ vue Router (y/n) : y    ----vue ClI2
     })
     ```
     + 3.App.vue添加<router-link>和<router-view>使用路由
-    ```
+    ```html
     <div id="app">
         <h4>index.html引入App.vue模块的内容</h4>
         <router-link to="/home">主页</router-link>
@@ -70,7 +71,7 @@ vue Router (y/n) : y    ----vue ClI2
     ```
 
 - redirect重定向
-```
+```js
 routes: [
   {//默认路由路径时重定向至'/home'路径下路由组件
     path: '/',
@@ -90,7 +91,7 @@ routes: [
 ```
 
 - 阻止路由跳转自身时报错
-```
+```js
 const originalPush = VueRouter.prototype.push
    VueRouter.prototype.push = function push(location) {
    return originalPush.call(this, location).catch(err => err)
@@ -100,7 +101,7 @@ const originalPush = VueRouter.prototype.push
 - 路径模式：history/hash
 
 默认的路由路径修改模式是基于URL的Hash模式,路径在会出现'#/'的部分,可以通过配置修改为通过pushState的history的模式
-```
+```js
 new Route({
     routes: [
         {...},
@@ -111,22 +112,21 @@ new Route({
 ```
 
 ### router-link的属性
-```
-<router-link to="/about" tag="button" replace active-class="active">
-</router-link>
+```vue
+<router-link to="/about" tag="button" replace active-class="active"></router-link>
 ```
 
 - to: 指向路由路径及对应组件
 - tag: 渲染< router-link>为指定元素，默认为a标签
 - replace: 是否启用replaceState方法修改路由,此方法不允许通过history记录回退/前进
-- router-link-active: 指定当< router-link>聚焦状态下,该< router-link>的辅助类名;  
+- router-link-active: 指定当< router-link>聚焦状态下,该< router-link>的辅助类名; 
 也可在'router/index.js'下配置路由对象Router的属性linkActiveClass为"active"
 
 ### router-view的属性
 - key: router-view中不同路由之间在同一组件下跳转，默认路由不更新，需绑定:key="$route.path"声明path为更新键
 
 ### 路由跳转方法
-```
+```js
 methods: {
     toHome(){
         this.$router.push("/home");
@@ -187,7 +187,7 @@ export default {
 ```
 
 - 附：this.$route.params获取当前活跃的动态路由的动态参数
-```
+```vue
 <template>
   <div>
     <h4>用户{{userId}}</h4>
@@ -211,7 +211,7 @@ export default {
 这要求我们对打包文件'/dist/js/app.序列号.js'业务代码进行分包，即分离出各个路由对应的页面页面代码
 
 - 配置router/index.js
-```
+```js
 //ES6的异步组件和webpack代码分割写法
 const Home = () => import('../components/Home.vue')
 const About = () => import('../components/About.vue')
@@ -223,7 +223,7 @@ const About = resolve => require(['../components/User.vue'],resolve)
 
 ### 路由嵌套
 父级路由下嵌套子路由，父级页面组件下嵌套子页面组件
-```
+```vue
 -- router/index.js --
 {
   path: '/home',
@@ -252,7 +252,6 @@ const About = resolve => require(['../components/User.vue'],resolve)
     <div>主页内容。。。。。</div>
     <router-link to="/home/message">消息</router-link>
     <router-link to="/home/news">新闻</router-link>
-
     <router-view></router-view>
   </div>
 </template>
@@ -265,7 +264,7 @@ const About = resolve => require(['../components/User.vue'],resolve)
     1. 添加动态路由： path: '/profile/:userId'
     2. 绑定动态路由参数： :to="'/profile/' + id"
     3. 路由组件使用动态参数： this.$route.params.userId  
-适用于通过动态路径传递1个参数串，数据量小，字符格式限制
+    适用于通过动态路径传递1个参数串，数据量小，字符格式限制
 
 - $router.query查询参数
     1. 绑定路由激活传递的参数：
@@ -285,7 +284,7 @@ router.beforeEach((to,form,next) => {
   next();
   ...导航解析时的处理，即路由改变中的处理
 });
-``` 
+```
 
 - 其他钩子(回调函数)
     + afterEach 全局后置钩子
@@ -293,49 +292,55 @@ router.beforeEach((to,form,next) => {
     + beforeRouteEnter 组件内守卫
 - 附：新的路由记录属性
 meta: Object类型值，用于给当前路由记录状态添加元数据
-matched: Array类型值，包含当前路由的所有嵌套路径片段的路由记录，可访问父级路由
-```
+matched: Array类型值，包含当前路由的所有嵌套路径片段的路由记录，可访问父级路
 
 ### keep-alive缓存router组件
 vue默认包含一个可直接使用的keep-alive内置组件,用于对内部组件进行缓存,并为缓存的组件提供了activated和deactivated方法
 
 - 基本使用
-```
+
 1. 缓存APP的组件
-  <keep-alive>
-    <router-view/>
-  </keep-alive>
-
+    
+    ```html
+  <keep-alive><router-view/></keep-alive>
+    ```
+    
 2. 组件内调用activated监听缓存组件激活
+    
+    ```js
   activated(){
-    this.$router.push(this.path);
-  }
-
+    	this.$router.push(this.path);
+    }
+    ```
+    
 3. 后置导航钩子记录home子路径
-  beforeRouteLeave(to,from,next){
-    this.path = from.path;
-    next();
+    
+    ```js
+    beforeRouteLeave(to,from,next){
+      this.path = from.path;
+      next();
   }
-```
+  ```
 
 - include和exclude
 
-指定缓存组件name值/指定不缓存组件,属性值为指定组件的name值
-```
-  <keep-alive exclude="Profile">
-    <router-view/>
-  </keep-alive>
+  指定缓存组件name值/指定不缓存组件,属性值为指定组件的name值
+
+```vue
+<keep-alive exclude="Profile"><router-view/></keep-alive>
 ```
 
 - 控制滚动行为
   1. 保留路由滚动的位置，必须对该路由组件keep-alive
   2. 创建router实例时，添加滚动控制
-  ```
-  scrollBehavior (to, from, savedPosition) {
-  if (savedPosition) {  // 如果路由被keep-alive，则切换为原来位置
-    return savedPosition
-  } else {
-    return x: 0, y: 0   // 所有未缓存的路由切换直接置顶
-  }
-}
-  ```
+
+```js
+    scrollBehavior (to, from, savedPosition) {
+      if (savedPosition) {  // 如果路由被keep-alive，则切换为原来位置
+        return savedPosition
+      } else {
+        return x: 0, y: 0   // 所有未缓存的路由切换直接置顶
+      }
+    }
+```
+

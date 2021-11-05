@@ -57,7 +57,7 @@ tags:
     :current-page.sync="pageState.pageIndex"
     :page-size.sync="pageState.pageSize"
     :total.sync="pageState.pageTotal"
-    :page-sizes="[10, 20, 30]"
+    :page-sizes="pageState.pageSizes"
     layout="sizes, prev, pager, next"
   >
   </el-pagination>
@@ -72,7 +72,8 @@ tags:
       pageState: {
         pageIndex: 1,
         pageSize: 10,
-        pageTotal: 0
+        pageTotal: 0,
+        pageSizes: [10, 20, 30]
       }
     };
   }
@@ -229,6 +230,8 @@ closeDialog() {
 }
 ```
 
+
+
 ### Table表格
 
 #### 重复列表格
@@ -282,4 +285,173 @@ closeDialog() {
 - el-form:model + el-form-item:prop + :rules/required检验
 - prop支持:prop="属性.index.属性"字符串链式访问
 - form-item自定义校验：required/rules前置检验 + :error="error变量" + 校验时nextTrick修改error变量 + form-item:foucs/每次检验前 重置error变量
+
+
+
+### Message消息
+
+```js
+// element.js
+...
+Vue.prototype.$message = $message;
+
+// $message
+// this.$message方式调用
+function $message(options) {
+  if (typeof options == "string") options = { message: options };
+  options.duration = options.duration || 1600;
+  Message(options);
+}
+// this.$message.type方式调用(关闭其它Message提示)
+["success", "error", "warning", "info"].forEach(type => {
+  $message[type] = function(msgStr) {
+    Message.closeAll();
+    var options = typeof msgStr == "string" ? { message: msgStr } : msgStr;
+    options.type = type;
+    options.duration = options.duration || 1600;
+    Message(options);
+  };
+});
+```
+
+
+
+### Loading加载
+
+```js
+// element.js
+...
+Vue.prototype.$loading = $loading;
+
+// $loading
+function $loading(handle, options) {
+  if (typeof options == "string") options = { text: options };
+  options = { ...options, background: "rgba(0, 0, 0, 0.7)" };
+  let loadingInstance = Loading.service(options);
+  handle = handle instanceof Function ? handle() : handle;
+  return handle.finally(() => {
+    loadingInstance.close();
+  });
+}
+
+// 使用
+this.$loading(this.fetch,"数据加载中...");
+```
+
+
+
+### Menu侧边栏
+
+```vue
+<template>
+  <div id="sidebar" class="fulled-h">
+    <el-scrollbar>
+      <el-menu
+        :router="true"	// 路由模式
+        :default-active="activeRoute"	// 默认激活路径
+        :default-openeds="defaultOpeneds"	// 默认展开选项
+        @close="index => $refs.menu.open(index)"
+        ref="menu"
+      >
+        <template v-for="route in adminRoutes">
+          <!-- 仅一级 -->
+          <template v-if="!route.meta.title && route.children.length == 1">
+            <el-menu-item :index="route.path" :key="route.path" class="fs-md">
+              <svg-icon :iconClass="route.meta.icon" class="mr-12"></svg-icon
+              >{{ route.children[0].meta.title }}
+            </el-menu-item>
+          </template>
+          <!-- 两级 -->
+          <template v-else>
+            <el-submenu :key="route.path" :index="route.path">
+              <template slot="title">
+                <div class="d-flex al-center fs-md">
+                  <svg-icon :iconClass="route.meta.icon" class="mr-12"></svg-icon>
+                  <div>{{ route.meta.title }}</div>
+                </div>
+              </template>
+              <el-menu-item
+                v-for="item in route.children"
+                :key="item.path"
+                :index="`${route.path}/${item.path}`"
+                class="t-grey"
+              >
+                <div class="menu-item_inner px-12 bd-filt">{{ item.meta.title }}</div>
+              </el-menu-item>
+            </el-submenu>
+          </template>
+        </template>
+      </el-menu>
+    </el-scrollbar>
+  </div>
+</template>
+
+<script>
+import { mapGetters } from "vuex";
+
+export default {
+  computed: {
+    // 路由为数据
+    ...mapGetters(["adminRoutes"]),
+    // 当前激活路由
+    activeRoute() {
+      return this.$route.fullPath;
+    },
+    // 默认所有submenu展开
+    defaultOpeneds() {
+      return this.adminRoutes.map(route => route.path);
+    }
+  }
+};
+</script>
+<style lang="scss" scoped>
+// 隐藏组件scrollbar
+.el-scrollbar{
+  height: 100%;
+  .el-scrollbar__wrap{
+    overflow-x: hidden
+  }
+}
+</style>
+```
+
+
+
+### Breadcrumb面包屑导航(navbar)
+
+```vue
+<template>
+    <el-breadcrumb
+      v-show="matched && matched.length > 1"
+      separator-class="el-icon-arrow-right"
+      class="px-24 py-12 bgc-white"
+    >
+      <el-breadcrumb-item
+        v-for="(route, index) in matched"
+        :class="{ 'route-top': index !== matched.length - 1 }"
+        @click.prevent="toRoute(index, route.path)"
+        :key="route.path"
+        >{{ route.meta.title }}</el-breadcrumb-item
+      >
+    </el-breadcrumb>
+</template>
+
+<script>
+export default {
+  computed: {
+    matched() {
+      var matched = this.$route.matched;
+      return matched.filter(route => route.meta && route.meta.title);
+    }
+  },
+  methods: {
+    toRoute(index, path) {
+      // 1级路由标题和当前路由标题不可跳转
+      if (index == 0 || index == this.matched.length - 1) return;
+      this.$router.push(path);
+    }
+  }
+};
+</script>
+```
 

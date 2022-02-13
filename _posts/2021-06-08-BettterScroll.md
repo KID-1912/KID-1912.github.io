@@ -1,7 +1,7 @@
 ---
 layout:     post
 title:      BetterScroll2.0增强滚动
-subtitle:   BetterScroll 是一款重点解决移动端（已支持 PC）各种滚动场景需求的插件。它的核心是借鉴的 iscroll的实现，在 iscroll 的基础上又扩展了一些 feature 以及做了一些性能优化。BetterScroll 是使用纯 JavaScript 实现的，这意味着它是无依赖的。
+subtitle:   BetterScroll是一款重点解决移动端（已支持 PC）各种滚动场景需求的插件。借鉴iscroll实现。BetterScroll是使用纯 JavaScript实现的，这意味着它是无依赖的。
 date:       2020-6-08
 author:     page
 header-img: img/post-bg-swift2.jpg

@@ -440,9 +440,7 @@ export default {
 </style>
 ```
 
-
-
-### Breadcrumb面包屑导航(navbar)
+### Breadcrumb面包屑
 
 ```vue
 <template>

@@ -10,9 +10,10 @@ tags:
     - vue router
 ---
 
-# [vue Router](https://router.vuejs.org/zh/)
+# vue Router
 
 ## 前端路由
+
 为SPA的每个视图(网页组件)匹配特殊的url，形成映射关系；通过监听url来分发进行刷新、前进、后退、切换映射的页面；
 
 这要求路由必须做到以下两点：  
@@ -22,59 +23,64 @@ tags:
 解决方案包括hash模式和history模式
 
 ### vue Router安装与配置
+
 #### 安装
+
 - npm
-```sh
-npm install vue-router --save
-```
 
-- vue CLI添加为预设
-```sh
-(*) vue Router
-```
+  ```sh
+  npm install vue-router --save
+  ```
 
-#### 配置与使用
-- 配置(router/index.js)
-    + 1.引入vue-router模块,```Vue.use(VueRouter)```安装插件
-    + 2.传入路由映射配置,创建并输出router实例
-    + 3.挂载创建的路由实例
+- vue CLI添加为预设```(*) vue Router```
 
-- 使用
-    + 1.在components目录创建.vue路由组件文件
-    + 2.router/index.js配置路由组件的路径
-    ```js
-    import Home from '../components/home.vue'   //引入创建的路由组件
-    export default new Router({
-      routes: [
-      //配置路由组件与路径的映射,每个映射关系对应1个对象
-        {
-          path: '/home',    // 匹配url的路径
-          name: 'home',     // 绑定路由组件时的引用名称
-          component: Home   // 对应的路由组件对象
-        },
-        {
-          path: '/about',
-          name: 'about', 
-          component: About
-        },
-        {
-         path: "*",			// 通配符路由
-         meta: { title: 404 },
-         component: () => import("@/views/404.vue")
-        }
-      ]
-    })
-    ```
-    + 3.App.vue添加```<router-link>```和```<router-view>```使用路由
-    ```html
-    <div id="app">
-        <h4>index.html引入App.vue模块的内容</h4>
-        <router-link to="/home">主页</router-link>
-        <router-link :to="{path: '/about'}">关于</router-link>
-        <router-view/>
-    </div>
-    ```
-    
+#### 配置(router/index.js)
+
++ 1.引入vue-router模块,```Vue.use(VueRouter)```安装插件
++ 2.传入路由映射配置,创建并输出router实例
++ 3.挂载创建的路由实例
+
+#### 使用
+
++ 1.在components目录创建.vue路由组件文件
+
++ 2.router/index.js配置路由组件的路径
+
+  ```js
+  import Home from '../components/home.vue'   //引入创建的路由组件
+  export default new Router({
+    routes: [
+    //配置路由组件与路径的映射,每个映射关系对应1个对象
+      {
+        path: '/home',    // 匹配url的路径
+        name: 'home',     // 绑定路由组件时的引用名称
+        component: Home   // 对应的路由组件对象
+      },
+      {
+        path: '/about',
+        name: 'about', 
+        component: About
+      },
+      {
+       path: "*",			// 通配符路由
+       meta: { title: 404 },
+       component: () => import("@/views/404.vue")
+      }
+    ]
+  })
+  ```
+
++ 3.App.vue添加```<router-link>```和```<router-view>```使用路由
+
+  ```html
+  <div id="app">
+      <h4>index.html引入App.vue模块的内容</h4>
+      <router-link to="/home">主页</router-link>
+      <router-link :to="{path: '/about'}">关于</router-link>
+      <router-view/>
+  </div>
+  ```
+
 - redirect重定向
 
     ```js
@@ -92,7 +98,7 @@ npm install vue-router --save
     ]
     ```
 
-- 阻止路由跳转自身时报错
+- 阻止路由跳转自身时/被强制重定向报错
 
   ```js
   const originalPush = VueRouter.prototype.push
@@ -115,12 +121,10 @@ npm install vue-router --save
   })
   ```
 
-
-
 ### router-link
 
 ```vue
-<router-link to="/about" tag="button" replace active-class="active"></router-link>
+<router-link to="/about" tag="button" active-class="active" replace></router-link>
 ```
 
 - to: 指向路由路径及对应组件
@@ -129,13 +133,9 @@ npm install vue-router --save
 - router-link-active: 指定当< router-link>聚焦状态下,该< router-link>的辅助类名; 
 也可在'router/index.js'下配置路由对象Router的属性linkActiveClass为"active"
 
-
-
 ### router-view
 
 - key: router-view中不同路由之间在同一组件下跳转，默认路由不更新，需绑定:key="$route.path"声明path为更新键
-
-
 
 ### 路由跳转
 
@@ -144,21 +144,52 @@ methods: {
     toHome(){
         this.$router.push("/home");
     },
-    reAbout(){
+    toAbout(){
         this.$router.replace("/about");
+    },
+    back(){
+        this.$router.back();
     }
 }
 ```
 
+### 路由嵌套
 
+父级路由下嵌套子路由，父级页面组件下嵌套子页面组件
 
-### 路由回退
-
+```html
+-- router/index.js --
+{
+  path: '/home',
+  name: 'home',
+  component: Home,
+  children: [           //嵌套子路由
+    {
+      path: '',
+      redirect: 'message'
+    },
+    {
+      path: 'message',
+      component: HomeMessage
+    },
+    {
+      path: 'news',
+      component: HomeNews
+    }
+  ]
+},
+...
+-- Home.vue父级页面组件使用子页面组件 --
+<template>
+  <div>
+    <h4>home路由组件</h4>
+    <div>主页内容。。。。。</div>
+    <router-link to="/home/message">消息</router-link>
+    <router-link to="/home/news">新闻</router-link>
+    <router-view></router-view>
+  </div>
+</template>
 ```
-this.$router.back()
-```
-
-
 
 ### 动态匹配路由
 
@@ -228,97 +259,56 @@ Router允许1个页面组件映射多个路径,这种可变的路由即动态匹
   </script>
   ```
 
-
-
 ### 路由懒加载
 
 路由懒加载，即目标路由被激活后才请求对应的路由页面相关业务代码，从而提高页面性能；
 这要求我们对打包文件'/dist/js/app.序列号.js'业务代码进行分包，即分离出各个路由对应的页面代资源；
 
 - 配置router/index.js
-```js
-//ES6的异步组件和webpack代码分割写法
-const Home = () => import('../components/Home.vue')
-const About = () => import('../components/About.vue')
-const User = () => import('../components/User.vue')
 
-//AMD写法
-const About = resolve => require(['../components/User.vue'],resolve)
-```
-
-
-
-### 路由嵌套
-
-父级路由下嵌套子路由，父级页面组件下嵌套子页面组件
-```tex
--- router/index.js --
-{
-  path: '/home',
-  name: 'home',
-  component: Home,
-  children: [           //嵌套子路由
-    {
-      path: '',
-      redirect: 'message'
-    },
-    {
-      path: 'message',
-      component: HomeMessage
-    },
-    {
-      path: 'news',
-      component: HomeNews
-    }
-  ]
-},
-...
--- Home.vue父级页面组件使用子页面组件 --
-<template>
-  <div>
-    <h4>home路由组件</h4>
-    <div>主页内容。。。。。</div>
-    <router-link to="/home/message">消息</router-link>
-    <router-link to="/home/news">新闻</router-link>
-    <router-view></router-view>
-  </div>
-</template>
-```
-
-
+  ```js
+  //ES6的异步组件和webpack代码分割写法
+  const Home = () => import('../components/Home.vue')
+  const About = () => import('../components/About.vue')
+  const User = () => import('../components/User.vue')
+  
+  //AMD写法
+  const About = resolve => require(['../components/User.vue'],resolve)
+  ```
 
 ### 路由通信
 
 切换/激活路由组件时，传递部分数据至router组件
 
-- $router.params动态路由参数
+- 动态路由
     1. 添加动态路由： path: '/profile/:userId'
     2. 绑定动态路由参数： :to="'/profile/' + id"
     3. 路由组件使用动态参数： this.$route.params.userId
     4. 适用于通过动态路径传递1个参数串，数据量小，字符格式限制
-
 - $router.query查询参数
     1. 绑定路由激活传递的参数：
         - :to="{path: '/profile',query: {name: 'page',userId: 12138}}"
         - this.$routes.push({path: '/profile',query: {name: 'page',userId: '12138'}})
     2. 激活指定路由时，url为"http://localhost:8080/profile?name=page&userId=12138"
-    2. 路由组件使用查询参数： this.$route.query.userId/name
-
-
+    3. 路由组件使用查询参数： this.$route.query.userId/name
+- $router.params参数
+    1. 用法与query一致，但不会回显在页面地址，因此刷新会丢失
+    2. 由于避免与动态路由冲突，传递params要求不指定path的name跳转方式
 
 ### Router导航守卫
 
 “导航”表示路由正在发生改变。有多种机会植入路由导航过程中：全局的, 单个路由独享的, 或者组件级的
 
 - 全局前置导航
-```
-const router = new VueRouter({ ... });
-router.beforeEach((to,form,next) => {
-  //该回调函数重写了默认next处理,添加额外处理前须执行默认next处理
-  next();
-  ...导航解析时的处理，即路由改变中的处理
-});
-```
+
+  ```js
+  const router = new VueRouter({ ... });
+  router.beforeEach((to,form,next) => {
+    //该回调函数重写了默认next处理,添加额外处理前须执行默认next处理
+    next();
+    ...导航解析时的处理，即路由改变中的处理
+  });
+  ```
 
 - 其他钩子(回调函数)
     + afterEach 全局后置钩子
@@ -327,8 +317,6 @@ router.beforeEach((to,form,next) => {
 - 附：新的路由记录属性
 meta: Object类型值，用于给当前路由记录状态添加元数据
 matched: Array类型值，包含当前路由的所有嵌套路径片段的路由记录，可访问父级路
-
-
 
 ### keep-alive缓存
 
@@ -380,7 +368,24 @@ vue默认包含一个可直接使用的keep-alive内置组件,用于对内部组
   }
   ```
   
-  
+
+## 相关方法
+
+### 添加单个路由项
+
+```router.addRoute(RouteOption:  Object)```
+
+### 批量添加路由项
+
+```router.addRoutes(RouteOptions: Array)```
+
+### 重置路由
+
+```js
+router.matcher = new VueRouter({
+	routes: baseRoutes  // 路由配置
+}).matcher;
+```
 
 ## 动态路由(鉴权)
 

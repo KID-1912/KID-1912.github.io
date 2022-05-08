@@ -7,13 +7,12 @@ author:     page
 header-img: img/post-bg-re-vs-ng2.jpg
 catalog:    true
 tags:
-    - vue项目
-    - 项目日志
-    - 开发文档
+    - vue
+    - 项目实战
 ---
 
 ## supermall项目
-### 新项目步骤
+## 新项目步骤
 1. 划分文件夹
     - src
         + assets    资源文件
@@ -37,7 +36,7 @@ tags:
     - vue.config.js 配置路径别名
     - .editorconfig 代码格式化风格
 
-### 业务开发
+## 业务开发
 #### 首页开发(home.vue)
 1. tabbar
 - 组件
@@ -252,7 +251,7 @@ home组件created时调用 -> home.js发送请求 -> request.js请求方法
     + 数据切换
         - 切换tab时，切换curMaitkey和curMiniWallkey，使绑定在对应组件上数据改变
 
-### Toast弹窗插件
+## Toast弹窗插件
 1. 加入购物车回调处理
     + addCart事件添加Promise异步回调
 
@@ -270,7 +269,7 @@ home组件created时调用 -> home.js发送请求 -> request.js请求方法
     + this.$toast.show('弹出文本',time)
 
 
-### 优化处理
+## 优化处理
 - fastclick解决移动端点击延迟300ms
     + 安装fastclick包
     + 导入fastclick模块
@@ -285,7 +284,7 @@ home组件created时调用 -> home.js发送请求 -> request.js请求方法
     + 单位转换根据视口大小缩放元素宽高
     + 定义不允许转换的固定大小元素，可在配置中填入类名或样式文件
 
-### 部署项目
+## 部署项目
 - 远程部署
     + 远程主机安装centus
     + 通过本地终端链接远程主机

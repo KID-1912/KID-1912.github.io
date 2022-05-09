@@ -182,18 +182,18 @@ uploadReady: false, // 上传文件就绪
 
 ```vue
 // template
-<Dialog1 :dialog-type.sync="dialogType" />
-<Dialog2 :dialog-type.sync="dialogType"/>
-<Dialog3 :dialog-type.sync="dialogType"/>
+<Dialog1 :dialog.sync="dialogName" />
+<Dialog2 :dialog.sync="dialogName"/>
+<Dialog3 :dialog.sync="dialogName"/>
 
 // 开启弹窗
-this.dialogType = 'dialog1';
+this.dialogName = 'dialog1';
 ```
 
 ```vue
 // Dialog1
 <template>
-	<el-dialog :visible="dialogType === 'dialog1'">
+	<el-dialog :visible="dialogName === 'dialog1'">
 		dialog1 content
 		<template #footer>
             <el-button @click="close">关闭</el-button>
@@ -202,7 +202,7 @@ this.dialogType = 'dialog1';
 </template>	
 
 // 关闭弹窗
-this.$emit('update:dialogType','');
+this.$emit('update:dialogName','');
 ```
 
 #### 合并弹窗
@@ -219,7 +219,7 @@ this.$emit('update:dialogType','');
   :show-close="false"
 >
   <template>
-    <div v-if="dialogType == 'dialog1'"></div>
+    <div v-if="dialogName == 'dialog1'"></div>
     ...
   </template>
 </el-dialog>
@@ -233,33 +233,70 @@ this.dialogTitle = {
   ...
 };
 // data
-dialogType: "",
+dialogName: "",
 currentEditRecord: null, // 当前弹窗关联对象
 // computed
 dialogVisible(){
-  return !!this.dialogType
+  return this.dialogName ? true: false;
 }
 ```
 
 - 开启/关闭弹窗
 
 ```js
-openDialog(type, editRecord) {
-  this.dialogType = type;
+openDialog(name, editRecord) {
+  this.dialogName = name;
   editRecord && (this.currentEditRecord = editRecord);
 },
 closeDialog() {
-  this.dialogType == "dialog1" && (关闭前处理);
+  // 弹窗关闭前处理
+  this.dialogName == "dialog1" && (特定弹窗关闭前处理);
   ...
-  this.dialogType = "";
+  this.dialogName = "";
 }
 ```
 
+#### 弹窗状态
 
+弹窗来自外部状态，则弹窗开启时clone外部状态作为临时状态，弹窗编辑修改临时状态，修改成功则同步至外部状态；
+
+弹窗需要单独接口返回状态下，弹窗创建请求接口得到弹窗状态；弹窗开启时clone弹窗状态作为临时状态，弹窗编辑修改临时状态，修改成功则同步为弹窗状态；
 
 ### Table表格
 
-#### 重复列表格
+#### 内置插槽
+
+header(动态表头)
+
+```vue
+<template #header="{column, $index}">列{{$index}}</template>
+```
+
+empty(空数据占位)
+
+```vue
+<template #empty><div>暂无数据...</div></template>
+```
+
+#### 宽度自适应
+
+```vue
+// min-width 按照百分比分配剩余空间
+<el-table-column prop="id" min-width="10%"/>
+<el-table-column prop="name" min-width="45%"/>
+<el-table-column prop="tel" min-width="45%"/>
+```
+
+#### 多选行
+
+```vue
+<el-table row-key="info.id">
+	// reserve-selection 数据更新不销毁选中状态
+	<el-table-column type="selection" reserve-selection />
+</el-table>
+```
+
+#### 重复列
 
 | 姓名 | 分数 | 姓名 | 分数 | 姓名 | 分数 |
 | :--: | :--: | :--: | :--: | :--: | :--: |
@@ -282,7 +319,7 @@ closeDialog() {
    <el-table :data="lineLength">
      <template v-for="(num, index) in 3">
        <el-table-column label="名称" :key="`${num}.name`">
-         <template #default="{$index}">
+         <template #default="{ $index }">
            <div v-if="$index * 3 + index < tableList.length">
                {{ tableList[$index * 3 + index].name }}
             </div>

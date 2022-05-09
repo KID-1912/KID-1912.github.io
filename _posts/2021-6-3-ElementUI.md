@@ -14,7 +14,7 @@ tags:
 
 ## 布局
 
-### 结构布局
+#### 结构布局
 
 - \<el-container>：外层容器
 - \<el-header>：顶栏容器
@@ -22,7 +22,7 @@ tags:
 - \<el-main>：主要区域容器
 - \<el-footer>：底栏容器
 
-### 内容布局
+#### 内容布局
 
 - \<el-page-header>：页头
 - \<el-card>：卡片
@@ -30,7 +30,7 @@ tags:
 - \<el-image>：图片
 - \<el-drawer>：抽屉
 
-### 弹性布局
+#### 弹性布局
 
 - \<el-row> + \<el-col>
   - \<el-col :span="12">（分为24份span）
@@ -40,11 +40,9 @@ tags:
   - \<el-col :xs="8" :sm="6" :md="4" :lg="3" :xl="1">（响应式）
   - \<el-row :span="6" class="hidden-xs-only/...">（响应式显示隐藏类;import 'element-ui/lib/theme-chalk/display.css';）
 
-
-
 ## 组件
 
-### Pagination分页
+#### Pagination分页
 
 - 组件
 
@@ -88,11 +86,9 @@ fetch(){
 }
 ```
 
-
-
 ## Upload上传
 
-#### 单文件上传
+单文件上传
 
 - Upload组件
 
@@ -176,8 +172,6 @@ uploadReady: false, // 上传文件就绪
  }
 ```
 
-
-
 ## Dialog弹窗
 
 ```vue
@@ -207,7 +201,7 @@ this.$emit('update:dialogName','');
 
 #### 合并弹窗
 
-对管理后台(admin)的表格数据行进行增删改查操作，适合合并操作弹窗
+对管理后台(admin)的表格数据行进行增删改查操作，可以合并操作弹窗
 
 - 组件
 
@@ -338,19 +332,57 @@ empty(空数据占位)
    </el-table>
    ```
 
-
-
 ### Form表单
 
-#### 检验
+#### 检验实现
 
-- el-form:model + el-form-item:prop + :rules/required检验
-- prop支持:prop="属性.index.属性"字符串链式访问
-- form-item自定义校验：required/rules前置检验 + :error="error变量" + 校验时nextTrick修改error变量 + form-item:foucs/每次检验前 重置error变量
+一般通过```el-form:model + el-form-item:prop + :rules/required```实现检验，且prop支持```:prop="属性.index.属性"```属性路径式访问
 
+对于部分复杂情况，可借助form-item自定义校验：```required/rules前置检验 + :error="error错误信息" + 校验时nextTick设置error错误信息``` 附：form-item:foucs/每次检验前需重置error变量
 
+#### 提交时校验
 
-### Message消息
+默认elementUI在blur/change时必须会触发校验，我们可以添加一些判断，突破原有的触发校验限制做到提交时校验；
+
+```js
+// 标记是否为提交触发
+let isSubmitTrigger = false;
+// 校验规则
+const rules = {
+  username: { pattern: /^[A-Za-z0-9]+$/, message: '账号由字母与数字组成' },
+  password: {
+    validator,
+    required: true,
+    validate: validateEmpty,
+    message: '请输入密码'
+  },
+};
+
+// Login Handle
+this.logging = true;
+isSubmitTrigger = true;
+this.$refs.form.validate().then(() => { ... });
+isSubmitTrigger = false;
+
+// validator统一处理
+function validator(rule, value, callback) {
+  if (!isSubmitTrigger) return; // 仅提交表单时验证
+  // 空值校验
+  if (rule.required && value === '') return callback(new Error(' '));
+  // 对表单项自身进行validate校验
+  if (rule.validate) {
+    try {
+      rule.validate(value);
+    } catch (error) {
+      return callback(new Error(rule.message));
+    }
+  }
+  // 此处可添加提交时的校验，如校验两次密码是否输入一致
+  callback();
+}
+```
+
+## Message消息
 
 ```js
 // element.js
@@ -376,9 +408,7 @@ function $message(options) {
 });
 ```
 
-
-
-### Loading加载
+## Loading加载
 
 ```js
 // element.js
@@ -400,9 +430,7 @@ function $loading(handle, options) {
 this.$loading(this.fetch,"数据加载中...");
 ```
 
-
-
-### Menu侧边栏
+## Menu侧边栏
 
 ```vue
 <template>
@@ -477,7 +505,7 @@ export default {
 </style>
 ```
 
-### Breadcrumb面包屑
+## Breadcrumb面包屑
 
 ```vue
 <template>

@@ -7,10 +7,8 @@ author:     page
 header-img: img/post-bg-swift2.jpg
 catalog: true
 tags:
-    - 前后端分离
-    - 开发规范
 ---
-## RESTful API
+# RESTful API
 RESTful API是目前比较成熟的一套互联网应用程序的API设计理论,规范前端设备与后端进行通信机制;  
 ### 路径  
 1. 在RESTful架构中，每个网址代表一种资源，所以网址中不能有动词，只能有名词  

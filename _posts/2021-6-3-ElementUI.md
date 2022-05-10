@@ -281,6 +281,8 @@ empty(空数据占位)
 <el-table-column prop="tel" min-width="45%"/>
 ```
 
+注：仅单独对一列设置可能导致列偏移，建议每列设置
+
 #### 多选行
 
 ```vue
@@ -309,7 +311,7 @@ empty(空数据占位)
 
 2. $index行索引 + index数据索引计算出位置对应显示数据
 
-   ```html
+   ```vue
    <el-table :data="lineLength">
      <template v-for="(num, index) in 3">
        <el-table-column label="名称" :key="`${num}.name`">

@@ -199,6 +199,8 @@ this.dialogName = 'dialog1';
 this.$emit('update:dialogName','');
 ```
 
+**注：**使用```dialogName```控制多个弹窗会导致```destroy-on-close```弹窗关闭后销毁无效，可能需要手动重置状态
+
 #### 合并弹窗
 
 对管理后台(admin)的表格数据行进行增删改查操作，可以合并操作弹窗
@@ -283,14 +285,33 @@ empty(空数据占位)
 
 注：仅单独对一列设置可能导致列偏移，建议每列设置
 
+#### 单选行
+
+单选行：```el-table-column```内容为Radio单选框组件实现
+
 #### 多选行
 
 ```vue
-<el-table row-key="info.id">
+<el-table row-key="info.id" @selection-change="onSelectionChange">
 	// reserve-selection 数据更新不销毁选中状态
 	<el-table-column type="selection" reserve-selection />
 </el-table>
 ```
+
+```js
+// selection-change 返回选中的行数据集合
+onSelectionChange(list){
+    console.log(list);
+};
+// toggleRowSelection 手动选中/取消选中某行,row必须为行对象
+this.toggleRowSelection(row, true);
+```
+
+#### 默认部分选中的多选行
+
+```toggleRowSelection```的默认选中要求参数```row```，不适用于分页数据的默认多选；
+
+```el-table-column```内容为Checkoutbox多选框组件实现
 
 #### 重复列
 

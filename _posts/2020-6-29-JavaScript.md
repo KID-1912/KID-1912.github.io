@@ -26,10 +26,9 @@ function randomArr(arr, num) {
   const result = [];
   let count = arr.length;
   for (let i = 0; i < num; i += 1) {
-    const index = Math.random() * count + i;
-    if(result.includes(arr[index])){ // 抽取结果不允许重复
-            continue;
-    }
+    const index = parseInt(Math.random() * count) + i;
+    // 抽取结果不允许重复
+    if(result.includes(arr[index])) continue;
     result[i] = arr[index];
     arr[index] =  arr[i];
     count -= 1;
@@ -197,21 +196,3 @@ for (var i = 0; i < byteString.length; i++) {
 }
 return new Blob([ab], { type: mimeString });
 ```
-
-## 兼容
-
-### 浏览器检测
-
-- 能力检测
-    1. 检测浏览器
-
-    ```js
-    "getComputedStyle" in window    // IE6、7、8
-    ```
-
-- 客户端检测
-    1. 检测IE6、7、8  
-
-    ```js
-    /MISE (6|7|8)/i.test(navigator.userAgent)
-    ```

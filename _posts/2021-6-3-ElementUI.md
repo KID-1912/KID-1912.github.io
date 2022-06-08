@@ -155,11 +155,12 @@ uploadReady: false, // 上传文件就绪
      this.closeDialog();
      this.fetch();
    } else {
+     // 响应失败
      this.resetUpload();
      this.$message({ type: "error", message: "上传失败" });
    }
  },
- // 请求失败导致的上传失败
+ // 请求发出失败
  uploadError() {
    this.uploading = false;
    this.resetUpload();
@@ -213,6 +214,7 @@ this.$emit('update:dialogName','');
   :title="dialogTitle[dialogType]"
   :close-on-click-modal="false"
   :show-close="false"
+  @close="closeDialog"
 >
   <template>
     <div v-if="dialogName == 'dialog1'"></div>
@@ -359,13 +361,15 @@ this.toggleRowSelection(row, true);
 
 #### 检验实现
 
-一般通过```el-form:model + el-form-item:prop + :rules/required```实现检验，且prop支持```:prop="属性.index.属性"```属性路径式访问
+一般通过```el-form:model + el-form-item:prop:rules/required```实现检验，且prop支持```:prop="属性.index.属性"```属性路径式访问
 
-对于部分复杂情况，可借助form-item自定义校验：```required/rules前置检验 + :error="error错误信息" + 校验时nextTick设置error错误信息``` 附：form-item:foucs/每次检验前需重置error变量
+自定义校验报错时，可借助form-item:error控制错误信息：```:required/rules前置检验 + :error="errorMsg"控制错误信息 + 校验后nextTick设置error错误信息``` 附：form-item:foucs/每次检验前需重置error变量
 
-#### 提交时校验
+表单对象的状态(`el-form:model`)为数组情况，可以`:model="{formData}"`，此时prop路径增加前缀`prop="formData.index.attr"`
 
-默认elementUI在blur/change时必须会触发校验，我们可以添加一些判断，突破原有的触发校验限制做到提交时校验；
+#### 仅提交时校验
+
+默认elementUI在blur/change时必会触发校验，我们可以添加一些判断，突破原有的触发校验限制做到提交时校验；
 
 ```js
 // 标记是否为提交触发
@@ -400,7 +404,8 @@ function validator(rule, value, callback) {
       return callback(new Error(rule.message));
     }
   }
-  // 此处可添加提交时的校验，如校验两次密码是否输入一致
+  // 提交时的多字段联合校验，如校验两次密码是否输入一致
+  ...multiple field validate logic
   callback();
 }
 ```
@@ -566,8 +571,6 @@ export default {
 </script>
 ```
 
-
-
 ## Scrollbar滚动
 
 ```vue
@@ -587,3 +590,18 @@ export default {
 </style>
 ```
 
+## InfiniteScroll无限滚动
+
+```vue
+<div
+  v-infinite-scroll="scrollMore"
+  infinite-scroll-distance="40"
+  :infinite-scroll-disabled="loading || isEnd"
+  infinite-scroll-immediate="false"
+  :style="{ height: '500px', overflowY: auto}"
+>
+    ...list-item
+</div>
+```
+
+`infinite-scroll-immediate`控制是否立即加载，默认会自动加载；仅值为'false'(此处非布尔值)禁用默认加载；

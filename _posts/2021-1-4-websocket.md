@@ -1,13 +1,13 @@
 ---
 layout:     post
 title:      websocket双向通信
-subtitle:   使用websocket进行双向通信的开发
+subtitle:   使用websocket进行双向通信开发
 date:       2021-01-4
 author:     page
 header-img: post-bg-alibaba.jpg
 catalog: true
 tags:
-    - Http
+    - HTTP
 ---
 
 ### 事件通信

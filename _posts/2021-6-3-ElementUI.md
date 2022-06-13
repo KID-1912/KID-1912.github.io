@@ -7,7 +7,7 @@ author:     page
 header-img: img/home-bg-geek.jpg
 catalog: true
 tags:
-    - Element-UI
+    - vue
 ---
 
 # Element-UI
@@ -253,6 +253,10 @@ closeDialog() {
   this.dialogName = "";
 }
 ```
+
+#### 弹窗嵌套
+
+将内层`dialog`的`append-to-body`值设为 true 解决`modal`覆盖问题
 
 #### 弹窗状态
 

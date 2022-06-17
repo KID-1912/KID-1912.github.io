@@ -200,7 +200,7 @@ this.dialogName = 'dialog1';
 this.$emit('update:dialogName','');
 ```
 
-**注：**使用```dialogName```控制多个弹窗会导致```destroy-on-close```弹窗关闭后销毁无效，可能需要手动重置状态
+**注：**```destroy-on-close```属性即关闭弹窗后刷新组件，仅当弹窗状态由唯一内容子组件时具备重置弹窗状态功能；否则请为内容容器添加`v-if`解决状态残留；
 
 #### 合并弹窗
 

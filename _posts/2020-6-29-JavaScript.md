@@ -13,9 +13,9 @@ tags:
 
 ## Object类型
 
-Object.keys(obj) 返回对象可遍历属性组成的数组
+`Object.keys(obj)` 返回对象可遍历属性组成的数组
 
-hasOwnProperty(key) 判断key是否属于非继承的属性
+`hasOwnProperty(key) `判断key是否属于非继承的属性
 
 ## Array数组
 
@@ -138,30 +138,44 @@ function randomArr(arr, num) {
 
 ## String
 
-- 方法
-    1. trim()
-        - 清除字符串首尾空格
-        - 手写一个trim方法
+`str.trim()`
 
-        ```js
-        if(!String.prototype.trim){
-            String.prototype.trim = function(){
-                return this.replace(/(^ +| +$)/g,"")
-            }
-        }
-        ```
+- 清除字符串首尾空格
+- 手写一个trim方法
 
-    2. padStart(2, "0")
-        - ES7新方法，设置字符串最小长度，不足部分用指定字符填充
+```js
+if(!String.prototype.trim){
+    String.prototype.trim = function(){
+        return this.replace(/(^ +| +$)/g,"")
+    }
+}
+```
+
+`str.padStart(2, "0")`
+
+- ES7新方法，设置字符串最小长度，不足部分用指定字符填充
 
 ## JSON
 
-1. JSON.stringify()
-    - JSON.stringify(obj,null,4); //自动填充4个空格分隔
+`JSON.stringify()`
+
+- `JSON.stringify(obj,null,4)  自动填充4个空格分隔
+
+## Number
+
+`number.toFixed(digits)`保留小数点位数后数字(以字符串类型返回)
+
+## Math
+
+`Math.ceil()`向上取整
+
+`Math.floor()`向下取整
+
+`Math.round()`四舍五入取整
 
 ## API相关
 
-### 图片转base64(blob方式)
+### blob转base64(blob方式)
 
 ```js
 fetch('图片资源url',{

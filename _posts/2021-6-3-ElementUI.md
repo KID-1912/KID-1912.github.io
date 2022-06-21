@@ -414,6 +414,18 @@ function validator(rule, value, callback) {
 }
 ```
 
+## Radio/Checkbox单选/多选
+
+自定义内容
+
+```vue
+<el-radio-group v-model="form" @change="onChange">
+  <el-radio :label="0">000</el-radio>
+  <el-radio :label="1">111</el-radio>
+</el-radio-group>
+.el-checkbox:flex + order自定义选框与内容顺序
+```
+
 ## Message消息
 
 ```js
@@ -593,6 +605,10 @@ export default {
 }
 </style>
 ```
+
+## Collapse折叠
+
+默认空格键能控制弹起或收起，绑定 keyup.stop 可阻止
 
 ## InfiniteScroll无限滚动
 

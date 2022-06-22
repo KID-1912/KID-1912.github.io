@@ -36,90 +36,100 @@ tags:
 
 #### 配置(router/index.js)
 
-+ 1.引入vue-router模块,```Vue.use(VueRouter)```安装插件
-+ 2.传入路由映射配置,创建并输出router实例
-+ 3.挂载创建的路由实例
+1.引入vue-router模块,```Vue.use(VueRouter)```安装插件
+
+2.传入路由映射配置,创建并输出router实例
+
+3.挂载创建的路由实例
 
 #### 使用
 
-+ 1.在components目录创建.vue路由组件文件
+1.在components目录创建.vue路由组件文件
 
-+ 2.router/index.js配置路由组件的路径
+2.router/index.js配置路由组件的路径
 
-  ```js
-  import Home from '../components/home.vue'   //引入创建的路由组件
-  export default new Router({
+```js
+import Home from '../components/home.vue'   //引入创建的路由组件
+export default new Router({
+  routes: [
+  //配置路由组件与路径的映射,每个映射关系对应1个对象
+    {
+      path: '/home',    // 匹配url的路径
+      name: 'home',     // 绑定路由组件时的引用名称
+      component: Home   // 对应的路由组件对象
+    },
+    {
+      path: '/about',
+      name: 'about', 
+      component: About
+    },
+    {
+     path: "*",			// 通配符路由
+     meta: { title: 404 },
+     component: () => import("@/views/404.vue")
+    }
+  ]
+})
+```
+
+3.App.vue添加```<router-link>```和```<router-view>```使用路由
+
+```html
+<div id="app">
+    <h4>index.html引入App.vue模块的内容</h4>
+    <router-link to="/home">主页</router-link>
+    <router-link :to="{path: '/about'}">关于</router-link>
+    <router-view/>
+</div>
+```
+
+redirect重定向
+
+```js
+routes: [
+  {//默认路由路径时重定向至'/home'路径下路由组件
+    path: '/',
+    redirect: '/home'
+  },
+  {
+    path: '/home',
+    name: 'home',
+    component: Home
+  },
+  ...
+]
+```
+
+路由跳转自身时/被强制重定向报错
+
+控制台输出`Error: Redirected when going from "/login" to "/home" via a navigation guard.`
+
+解决：
+
+调用路由跳转报错代码添加`catch`捕获错误
+
+重写push方法忽略报错，可能会屏蔽所有相关报错不利于debug
+
+```js
+const originalPush = VueRouter.prototype.push;
+VueRouter.prototype.push = function push(location) {
+   return originalPush.call(this, location).catch(err => err)
+}
+```
+
+路径模式：history/hash
+
+默认的路由路径修改模式是基于URL的Hash模式,路径在会出现'#/'的部分,可以通过配置修改为通过pushState的history的模式
+
+```js
+new Route({
     routes: [
-    //配置路由组件与路径的映射,每个映射关系对应1个对象
-      {
-        path: '/home',    // 匹配url的路径
-        name: 'home',     // 绑定路由组件时的引用名称
-        component: Home   // 对应的路由组件对象
-      },
-      {
-        path: '/about',
-        name: 'about', 
-        component: About
-      },
-      {
-       path: "*",			// 通配符路由
-       meta: { title: 404 },
-       component: () => import("@/views/404.vue")
-      }
-    ]
-  })
-  ```
-
-+ 3.App.vue添加```<router-link>```和```<router-view>```使用路由
-
-  ```html
-  <div id="app">
-      <h4>index.html引入App.vue模块的内容</h4>
-      <router-link to="/home">主页</router-link>
-      <router-link :to="{path: '/about'}">关于</router-link>
-      <router-view/>
-  </div>
-  ```
-
-- redirect重定向
-
-    ```js
-    routes: [
-      {//默认路由路径时重定向至'/home'路径下路由组件
-        path: '/',
-        redirect: '/home'
-      },
-      {
-        path: '/home',
-        name: 'home',
-        component: Home
-      },
-      ...
-    ]
-    ```
-
-- 阻止路由跳转自身时/被强制重定向报错
-
-  ```js
-  const originalPush = VueRouter.prototype.push
-     VueRouter.prototype.push = function push(location) {
-     return originalPush.call(this, location).catch(err => err)
-  }
-  ```
-
-- 路径模式：history/hash
-
-  默认的路由路径修改模式是基于URL的Hash模式,路径在会出现'#/'的部分,可以通过配置修改为通过pushState的history的模式
-
-  ```js
-  new Route({
-      routes: [
-          {...},
-          {...}
-      ],
-      mode: 'history'
-  })
-  ```
+        {...},
+        {...}
+    ],
+    mode: 'history'
+})
+```
 
 ### router-link
 

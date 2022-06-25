@@ -295,15 +295,19 @@ Router允许1个页面组件映射多个路径,这种可变的路由即动态匹
     2. 绑定动态路由参数： :to="'/profile/' + id"
     3. 路由组件使用动态参数： this.$route.params.userId
     4. 适用于通过动态路径传递1个参数串，数据量小，字符格式限制
+    
 - $router.query查询参数
     1. 绑定路由激活传递的参数：
-        - :to="{path: '/profile',query: {name: 'page',userId: 12138}}"
+        - :to="{ path: '/profile',query: { name: 'page', userId: 12138 }}"
         - this.$routes.push({path: '/profile',query: {name: 'page',userId: '12138'}})
     2. 激活指定路由时，url为"http://localhost:8080/profile?name=page&userId=12138"
     3. 路由组件使用查询参数： this.$route.query.userId/name
+    
+    **注**：非路由跳转下(导航栏访问/页面刷新)，query参数的值全部转为字符串类型，因此使用query前必须对其期望的类型转换
+
 - $router.params参数
     1. 用法与query一致，但不会回显在页面地址，因此刷新会丢失
-    2. 由于避免与动态路由冲突，传递params要求不指定path的name跳转方式
+    2. 由于避免与动态路由冲突，传递params要求以不指定path的name跳转方式
 
 ### Router导航守卫
 
@@ -383,7 +387,7 @@ vue默认包含一个可直接使用的keep-alive内置组件,用于对内部组
 
 Object类型值，用于给当前路由记录状态添加元数据
 
-### matched:
+### matched
 
 Array类型值，包含当前路由的所有嵌套路径片段的路由记录，可访问父级路
 

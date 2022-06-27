@@ -367,20 +367,43 @@ this.toggleRowSelection(row, true);
 
 一般通过```el-form:model + el-form-item:prop:rules/required```实现检验，且prop支持```:prop="属性.index.属性"```属性路径式访问
 
+`$form.validate(callback)`传入参数为回调函数，回调函数Function(boolean, object)返回校验结果：是否校验通过，未通过检验项信息；若未传入回调函数，则校验结果以validate返回的promise结果中获取；
+
+**依次校验多个表单**
+
+```js
+// 手动校验所有配置
+async validMultiForm() {
+  let isValid = false;
+  isValid = await this.$refs.applyForm.validate().catch(() => {
+    this.$message.error("applyForm错误");
+    this.activeSetting = "applySetting";
+    return false;
+  });
+  if (!isValid) return;
+  isValid = await this.$refs.pageForm.validate().catch(() => {
+    this.$message.error("pageForm错误");
+    this.activeSetting = "pageSetting";
+    return false;
+  });
+  return isValid;
+},
+```
+
 自定义校验报错时，可借助form-item:error控制错误信息：```:required/rules前置检验 + :error="errorMsg"控制错误信息 + 校验后nextTick设置error错误信息``` 附：form-item:foucs/每次检验前需重置error变量
 
-表单对象的状态(`el-form:model`)为数组情况，可以`:model="{formData}"`，此时prop路径增加前缀`prop="formData.index.attr"`
+**注：**表单对象的状态(`el-form:model`)为数组情况，可以`:model="{formData}"`，此时prop路径增加前缀`prop="formData.index.attr"`
 
 #### 仅提交时校验
 
-默认elementUI在blur/change时必会触发校验，我们可以添加一些判断，突破原有的触发校验限制做到提交时校验；
+默认elementUI在blur/change时必会触发校验，我们可以添加判断，过滤部分原有的触发校验限制做到仅提交时校验；
 
 ```js
 // 标记是否为提交触发
 let isSubmitTrigger = false;
 // 校验规则
 const rules = {
-  username: { pattern: /^[A-Za-z0-9]+$/, message: '账号由字母与数字组成' },
+  username: { pattern: /^[A-Za-z0-9]+$/, min: 6, message: '账号由字母与数字组成' },
   password: {
     validator,
     required: true,

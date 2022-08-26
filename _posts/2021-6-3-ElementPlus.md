@@ -26,7 +26,7 @@ tags:
 
 - 手动导入
 
-详见[官方文档](https://element-plus.gitee.io/zh-CN/)
+详见[官方文档](https://element-plus.gitee.io)
 
 ## 自定义主题
 

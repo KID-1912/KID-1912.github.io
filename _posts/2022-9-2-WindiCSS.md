@@ -1,4 +1,16 @@
-# Windi CSS
+---
+layout:     post
+title:      WindiCss
+subtitle:   Css工具类框架
+date:       2021-09-18
+author:     page
+header-img: img/post-bg-css3.webp
+catalog: true
+tags:
+    - CSS
+---
+
+# WindiCSS
 
 [官方文档](https://windicss.org/)  [中文文档](https://cn.windicss.org/)
 

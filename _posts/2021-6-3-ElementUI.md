@@ -12,6 +12,20 @@ tags:
 
 # Element-UI
 
+## 开始
+
+**安装：**`npm i element-ui -S`
+
+**引入**
+
+- Element UI（@vue）插件
+
+- 完整引入
+
+- 按需引入
+
+详见[官方文档](https://element.eleme.cn/#/zh-CN)
+
 ## 布局
 
 #### 结构布局
@@ -188,13 +202,13 @@ this.dialogName = 'dialog1';
 ```vue
 // Dialog1
 <template>
-	<el-dialog :visible="dialogName === 'dialog1'">
-		dialog1 content
-		<template #footer>
+    <el-dialog :visible="dialogName === 'dialog1'">
+        dialog1 content
+        <template #footer>
             <el-button @click="close">关闭</el-button>
-		</template>
+        </template>
     </el-dialog>
-</template>	
+</template>    
 
 // 关闭弹窗
 this.$emit('update:dialogName','');
@@ -299,8 +313,8 @@ empty(空数据占位)
 
 ```vue
 <el-table row-key="info.id" @selection-change="onSelectionChange">
-	// reserve-selection 数据更新不销毁选中状态
-	<el-table-column type="selection" reserve-selection />
+    // reserve-selection 数据更新不销毁选中状态
+    <el-table-column type="selection" reserve-selection />
 </el-table>
 ```
 
@@ -321,13 +335,13 @@ this.toggleRowSelection(row, true);
 
 #### 重复列
 
-| 姓名 | 分数 | 姓名 | 分数 | 姓名 | 分数 |
-| :--: | :--: | :--: | :--: | :--: | :--: |
-| xxx  |  **  | xxx  |  **  |  xx  |  **  |
-| xxx  |  **  | xxx  |  **  |  xx  |  **  |
+| 姓名  | 分数  | 姓名  | 分数  | 姓名  | 分数  |
+|:---:|:---:|:---:|:---:|:---:|:---:|
+| xxx | **  | xxx | **  | xx  | **  |
+| xxx | **  | xxx | **  | xx  | **  |
 
 1. 假设tableList为表格数据，基于tableList.length计算出最终显示行数，行数由数组lineLength决定
-
+   
    ```js
    // 非空时计算行数，空数组则默认按空数据显示表格
    if (this.tableList.length > 0) {
@@ -337,7 +351,7 @@ this.toggleRowSelection(row, true);
    ```
 
 2. $index行索引 + index数据索引计算出位置对应显示数据
-
+   
    ```vue
    <el-table :data="lineLength">
      <template v-for="(num, index) in 3">
@@ -504,9 +518,9 @@ this.$loading(this.fetch,"数据加载中...");
   <div id="sidebar" class="fulled-h">
     <el-scrollbar>
       <el-menu
-        :router="true"	// 路由模式
-        :default-active="activeRoute"	// 默认激活路径
-        :default-openeds="defaultOpeneds"	// 默认展开选项
+        :router="true"    // 路由模式
+        :default-active="activeRoute"    // 默认激活路径
+        :default-openeds="defaultOpeneds"    // 默认展开选项
         @close="index => $refs.menu.open(index)"
         ref="menu"
       >
@@ -614,10 +628,10 @@ export default {
 
 ```vue
 <div style="height: 560px">
-	<el-scrollbar>
-    	scroll content
-	</el-scrollbar>
-</div>	
+    <el-scrollbar>
+        scroll content
+    </el-scrollbar>
+</div>    
 
 <style>
 .el-scrollbar {

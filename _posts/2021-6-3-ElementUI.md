@@ -189,7 +189,7 @@ uploadReady: false, // 上传文件就绪
 
 ## Dialog弹窗
 
-```vue
+```html
 // template
 <Dialog1 :dialog.sync="dialogName" />
 <Dialog2 :dialog.sync="dialogName"/>
@@ -199,7 +199,7 @@ uploadReady: false, // 上传文件就绪
 this.dialogName = 'dialog1';
 ```
 
-```vue
+```html
 // Dialog1
 <template>
     <el-dialog :visible="dialogName === 'dialog1'">
@@ -406,7 +406,7 @@ async validMultiForm() {
 
 自定义校验报错时，可借助form-item:error控制错误信息：```:required/rules前置检验 + :error="errorMsg"控制错误信息 + 校验后nextTick设置error错误信息``` 附：form-item:foucs/每次检验前需重置error变量
 
-**注：**表单对象的状态(`el-form:model`)为数组情况，可以`:model="{formData}"`，此时prop路径增加前缀`prop="formData.index.attr"`
+**注：** 表单对象的状态(`el-form:model`)为数组情况，可以`:model="{formData}"`，此时prop路径增加前缀`prop="formData.index.attr"`
 
 #### 仅提交时校验
 

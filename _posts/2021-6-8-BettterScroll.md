@@ -15,25 +15,29 @@ tags:
 ## 基本使用
 
 - html结构
+  
   - .wrapper滚动容器，作为滚动可见容器
     - .content滚动内容，作为滚动内容容器
       - ...具体内容
 
 - style样式
+  
   - .wrapper需设置高度，overflow: hidden(非常必要！)
   - .content高度非必要，但必须保证其高度大于.wrapper高度
 
 - 引入并使用
+  
   - npm方式
+    
     1. 下载
-
+    
     ```js
     npm install @better-scroll/core --save
     yarn add @better-scroll/core
     ```
-
+    
     2. 引入并初始化.
-
+    
     ```js
     import BScroll from '@better-scroll/core'
     let bs = new BScroll('.wrapper', {
@@ -42,18 +46,19 @@ tags:
     ```
   
   - script方式
+    
     1. 加载
-
+    
     ```html
     <script src="https://unpkg.com/@better-scroll/core@latest/dist/core.min.js"></script>
     ```
-
+    
     2. 初始化
-
+    
     ```js
     let wrapper = document.getElementById("wrapper")
     let bs = new BScroll(wrapper, {})
-    ````
+    ```
 
 ## 常用配置
 
@@ -76,26 +81,31 @@ tags:
 
 - probeType: Number(0)
   通过监听实例的scroll事件执行某些操作，probeType决定scroll事件被触发规则
+  
   - 0：在任何时候都不派发 scroll 事件，
   - 1：仅仅当手指按在滚动区域上，每隔 momentumLimitTime 毫秒派发一次 scroll 事件，
   - 2：仅仅当手指按在滚动区域上，一直派发 scroll 事件，
   - 3：任何时候都派发 scroll 事件，包括调用 scrollTo 或者触发 momentum 滚动动画
-  由于默认probeType为0，所以必须配置了probeType为其他值时，监听的scroll事件才能被触发
+    由于默认probeType为0，所以必须配置了probeType为其他值时，监听的scroll事件才能被触发
 
 - preventDefaultException: Object({ tagName: /^(INPUT|TEXTAREA|BUTTON|SELECT|AUDIO)$/})
+  
   - 除了表单元素以外，better-scroll区域默认阻止原生组件的默认行为
   - 设置preventDefaultException的值为正则，对匹配的className,tagName不阻止default行为；如video播放
 
 ## 常用API
 
 - refresh()
+  
   - 主动重新计算 BetterScroll 滚动内容，如图片加载导致DOM布局变化会导致滚动出错
   - 此外通过observe-image插件可实现自动监听，无需手动调用refresh
 
 - scrollTo(x,y...)
+  
   - better-scroll实例滚动到指定绝对位置
 
 - on(type, fn)
+  
   - 添加better-scroll实例的监听事件
 
 ## 常用插件
@@ -157,13 +167,12 @@ new BScroll('.bs-wrapper', {
 ```
 
 3. slide相关方法
-
 - $bs.prev/next() 切换至上/下一屏
+
 - $bs.goToPage(pageX,pageY) 切换到指定所有屏
+
 - $bs.getCurrentPage() 返回包含当前屏信息对象,属性 x, y 即位置，pageX/Y即索引
-
 4. slide相关事件
-
 - slideWillChange 即将切换至下一屏
 
 ```js
@@ -235,7 +244,6 @@ new BScroll('.innerWrapper', {
 ```
 
 4. nested-scroll相关方法
-
 - purgeNestedScroll() 清除嵌套
 
 ```js

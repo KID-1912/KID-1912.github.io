@@ -10,7 +10,6 @@ tags:
     - JavaScript
 ---
 
-
 ## Object类型
 
 `Object.keys(obj)` 返回对象可遍历属性组成的数组
@@ -42,13 +41,16 @@ function randomArr(arr, num) {
 ### 闭包
 
 - 什么是闭包
-    1. 闭包并不是js才有的内容
-    2. 一般情况下，全局下调用函数会为给函数创建一个临时执行环境，当函数执行完成即销函数活动对象，也就是局部变量会被清除，但闭包能够让局部变量的值始终保持在内存中
-    3. js中闭包常以函数嵌套方式形成，我们可以让一个函数内通过嵌套一个函数(内层函数)，如果内层函数在全局下被赋予导致内层函数保存在内存中，那么由于内层函数依赖外层函数，内层函数也会被保留在内存中，不会被垃圾回收；
-    4. 这个函数就是闭包
-- js隐式转换
-  - 可以使用对象的toString方法实现隐式转换，如下函数柯里化例子
+  
+  1. 闭包并不是js才有的内容
+  2. 一般情况下，全局下调用函数会为给函数创建一个临时执行环境，当函数执行完成即销函数活动对象，也就是局部变量会被清除，但闭包能够让局部变量的值始终保持在内存中
+  3. js中闭包常以函数嵌套方式形成，我们可以让一个函数内通过嵌套一个函数(内层函数)，如果内层函数在全局下被赋予导致内层函数保存在内存中，那么由于内层函数依赖外层函数，内层函数也会被保留在内存中，不会被垃圾回收；
+  4. 这个函数就是闭包
 
+- js隐式转换
+  
+  - 可以使用对象的toString方法实现隐式转换，如下函数柯里化例子
+    
     ```js
     function add(...args){
       let _arr = args;
@@ -66,7 +68,7 @@ function randomArr(arr, num) {
 ### 防抖与节流
 
 - 防抖
-
+  
   ```js
   function debounce(fn,delay){
       let deferTimer;
@@ -80,30 +82,30 @@ function randomArr(arr, num) {
   ```
 
 - 节流
-
+  
   ```js
   function throttle(fun, delay) {
-  	let last, deferTimer
-  	return function () {
-  	    let that = this
-  	    let _args = arguments
-  	    let now = +new Date();
-  	    if (last && now < last + delay) {
-  	        clearTimeout(deferTimer)
-  	        deferTimer = setTimeout(function () {
-  	            last = now
-  	            fun.apply(that, _args)
-  	        }, delay)
-  	    }else {
-  	        last = now
-  	        fun.apply(that,_args)
-  	    }
-  	}
+      let last, deferTimer
+      return function () {
+          let that = this
+          let _args = arguments
+          let now = +new Date();
+          if (last && now < last + delay) {
+              clearTimeout(deferTimer)
+              deferTimer = setTimeout(function () {
+                  last = now
+                  fun.apply(that, _args)
+              }, delay)
+          }else {
+              last = now
+              fun.apply(that,_args)
+          }
+      }
   }
   ```
 
 - 动画节流
-
+  
   ```js
   function animationThrottle(fun) {
     let animating = false;
@@ -119,7 +121,7 @@ function randomArr(arr, num) {
   ```
 
 - 延迟节流
-
+  
   ```js
   function throttle(fun, delay) {
       let flag = true;

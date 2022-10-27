@@ -7,7 +7,7 @@ author:     page
 header-img: img/post-bg-swift2.jpg
 catalog: true
 tags:
-    - 类库工具
+    - 类库
 ---
 
 # BetterScroll

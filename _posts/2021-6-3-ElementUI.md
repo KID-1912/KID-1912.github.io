@@ -7,7 +7,7 @@ author:     page
 header-img: img/home-bg-geek.jpg
 catalog: true
 tags:
-    - vue
+    - 类库
 ---
 
 # Element-UI
@@ -185,6 +185,119 @@ uploadReady: false, // 上传文件就绪
    this.$refs.uploader.clearFiles();
    this.uploadReady = false;
  }
+```
+
+分片上传
+
+```html
+<!-- 基于七牛元sdk为例 -->
+<template>
+  <el-upload
+    class="mt-24"
+    action="/"
+    :on-change="handleUploadChange"
+    :auto-upload="false"
+    :show-file-list="false"
+    drag
+    multiple
+  >
+    <slot></slot>
+  </el-upload>
+</template>
+
+<script>
+  import * as qiniu from 'qiniu-js';
+
+  export default {
+    props: {
+      uploadList: { type: Array, default: () => [] },
+      fileTypeLimit: { type: Array, default: () => ['image/jpeg', 'image/png', 'image/gif'] },
+      fileSizeLimit: { type: Number, default: 20 }
+    },
+
+    methods: {
+      // 1. 添加上传
+      handleUploadChange(file) {
+        if (!this.fileTypeLimit.includes(file.raw.type)) return;
+        if (file.size / 1024 / 1024 > this.fileSizeLimit) {
+          this.$message.warn(`图片大小不正确，请重新上传小于${this.fileSizeLimit}M的图片！`);
+          return;
+        }
+        this.uploadList.push(file);
+        this.createPreviewURL(file);
+        this.uploadFile(file);
+      },
+
+      // 2. 创建任务
+      async uploadFile(file) {
+        const arr = file.name.split('.');
+        const ext = arr.pop();
+        const name = `${arr.join('.')}_${new Date().getTime()}.${ext}`;
+        const {
+          data: { key, token }
+        } = await this.$http.getQiNiuToken({ fileName: name });
+        file.key = key;
+        file.token = token;
+        file.observable = qiniu.upload(file.raw, key, token);
+        this.handleStartUpload(file);
+      },
+
+      // 开始上传
+      handleStartUpload(file) {
+        const next = (res) => {
+          file.uploadInfo = res.uploadInfo;
+          file.percentage < res.total.percent && (file.percentage = res.total.percent);
+        };
+        const error = () => {
+          file.status = 'fail';
+        };
+        const complete = () => {
+          file.status = 'success';
+        };
+        file.status = 'uploading';
+        file.subscription = file.observable.subscribe(next, error, complete);
+      },
+
+      // 暂停上传
+      handleStopUpload(file) {
+        file.subscription.unsubscribe();
+        file.status = 'stop';
+      },
+
+      // 取消上传
+      handleCancelUpload(file) {
+        const list = this.uploadList.filter((item) => item !== file);
+        this.$emit('update:uploadList', list);
+        file.subscription.unsubscribe();
+        file.uploadInfo && qiniu.deleteUploadedChunks(file.token, file.key, file.uploadInfo);
+      },
+
+      // 重新上传
+      async handleReUpload(file) {
+        file.status = 'ready';
+        file.percentage = 0;
+        const { token, key, uploadInfo } = file;
+        file.uploadInfo && qiniu.deleteUploadedChunks(token, key, uploadInfo);
+        this.uploadFile(file);
+      },
+
+      // 清空上传
+      clearUploadFiles() {
+        this.uploadList.forEach((file) => file.status === 'uploading' && this.handleCancelUpload(file));
+        this.$emit('update:uploadList', []);
+      },
+
+      // 临时预览图片
+      createPreviewURL(file) {
+        const fileReader = new FileReader();
+        fileReader.onload = () => {
+          fileReader.result && (file.previewURL = fileReader.result);
+        };
+        fileReader.readAsDataURL(file.raw);
+      }
+    }
+  };
+</script>
 ```
 
 ## Dialog弹窗

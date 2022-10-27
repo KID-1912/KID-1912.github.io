@@ -27,7 +27,7 @@ tags:
 #### 安装
 
 - npm
-
+  
   ```sh
   npm install vue-router --save
   ```
@@ -64,7 +64,7 @@ export default new Router({
       component: About
     },
     {
-     path: "*",			// 通配符路由
+     path: "*",            // 通配符路由
      meta: { title: 404 },
      component: () => import("@/views/404.vue")
     }
@@ -141,7 +141,7 @@ new Route({
 - tag: 渲染< router-link>为指定元素，默认为a标签
 - replace: 是否启用replaceState方法修改路由,此方法不允许通过history记录回退/前进
 - router-link-active: 指定当< router-link>聚焦状态下,该< router-link>的辅助类名; 
-也可在'router/index.js'下配置路由对象Router的属性linkActiveClass为"active"
+  也可在'router/index.js'下配置路由对象Router的属性linkActiveClass为"active"
 
 ### router-view
 
@@ -206,7 +206,7 @@ methods: {
 Router允许1个页面组件映射多个路径,这种可变的路由即动态匹配路由
 
 1. 配置动态匹配路由映射
-
+   
    ```js
    routes: [
      {
@@ -224,7 +224,7 @@ Router允许1个页面组件映射多个路径,这种可变的路由即动态匹
    ```
 
 2. 使用动态匹配路由
-
+   
    ```vue
    <template>
      <div id="app">
@@ -247,9 +247,8 @@ Router允许1个页面组件映射多个路径,这种可变的路由即动态匹
    }
    </script>
    ```
-
 - 附：this.$route.params获取当前路由的动态参数
-
+  
   ```vue
   <template>
     <div>
@@ -275,7 +274,7 @@ Router允许1个页面组件映射多个路径,这种可变的路由即动态匹
 这要求我们对打包文件'/dist/js/app.序列号.js'业务代码进行分包，即分离出各个路由对应的页面代资源；
 
 - 配置router/index.js
-
+  
   ```js
   //ES6的异步组件和webpack代码分割写法
   const Home = () => import('../components/Home.vue')
@@ -291,30 +290,36 @@ Router允许1个页面组件映射多个路径,这种可变的路由即动态匹
 切换/激活路由组件时，传递部分数据至router组件
 
 - 动态路由
-    1. 添加动态路由： path: '/profile/:userId'
-    2. 绑定动态路由参数： :to="'/profile/' + id"
-    3. 路由组件使用动态参数： this.$route.params.userId
-    4. 适用于通过动态路径传递1个参数串，数据量小，字符格式限制
-    
+  
+  1. 添加动态路由： path: '/profile/:userId'
+  2. 绑定动态路由参数： :to="'/profile/' + id"
+  3. 路由组件使用动态参数： this.$route.params.userId
+  4. 适用于通过动态路径传递1个参数串，数据量小，字符格式限制
+
 - $router.query查询参数
-    1. 绑定路由激活传递的参数：
-        - :to="{ path: '/profile',query: { name: 'page', userId: 12138 }}"
-        - this.$routes.push({path: '/profile',query: {name: 'page',userId: '12138'}})
-    2. 激活指定路由时，url为"http://localhost:8080/profile?name=page&userId=12138"
-    3. 路由组件使用查询参数： this.$route.query.userId/name
-    
-    **注**：非路由跳转下(导航栏访问/页面刷新)，query参数的值全部转为字符串类型，因此使用query前必须对其期望的类型转换
+  
+  1. 绑定路由激活传递的参数：
+     
+     - :to="{ path: '/profile',query: { name: 'page', userId: 12138 }}"
+     - this.$routes.push({path: '/profile',query: {name: 'page',userId: '12138'}})
+  
+  2. 激活指定路由时，url为"http://localhost:8080/profile?name=page&userId=12138"
+  
+  3. 路由组件使用查询参数： this.$route.query.userId/name
+     
+     **注**：非路由跳转下(导航栏访问/页面刷新)，query参数的值全部转为字符串类型，因此使用query前必须对其期望的类型转换
 
 - $router.params参数
-    1. 用法与query一致，但不会回显在页面地址，因此刷新会丢失
-    2. 由于避免与动态路由冲突，传递params要求以不指定path的name跳转方式
+  
+  1. 用法与query一致，但不会回显在页面地址，因此刷新会丢失
+  2. 由于避免与动态路由冲突，传递params要求以不指定path的name跳转方式
 
 ### Router导航守卫
 
 “导航”表示路由正在发生改变。有多种机会植入路由导航过程中：全局的, 单个路由独享的, 或者组件级的
 
 - 全局前置导航
-
+  
   ```js
   const router = new VueRouter({ ... });
   router.beforeEach((to,form,next) => {
@@ -325,41 +330,40 @@ Router允许1个页面组件映射多个路径,这种可变的路由即动态匹
   ```
 
 - 其他钩子(回调函数)
-    + afterEach 全局后置钩子
-    + beforeEnter 路由独享守卫
-    + beforeRouteEnter 组件内守卫
-    
+  
+  + afterEach 全局后置钩子
+  + beforeEnter 路由独享守卫
+  + beforeRouteEnter 组件内守卫
 
 ### keep-alive缓存
 
 vue默认包含一个可直接使用的keep-alive内置组件,用于对内部组件进行缓存,并为缓存的组件提供了activated和deactivated方法
 
 - 基本使用
-
 1. 缓存APP的组件
    
-    ```html
-    <keep-alive><router-view/></keep-alive>
-    ```
-    
+   ```html
+   <keep-alive><router-view/></keep-alive>
+   ```
+
 2. 组件内调用activated监听缓存组件激活
    
-    ```js
-    activated(){
-    	this.$router.push(this.path);
-    }
-    ```
-    
+   ```js
+   activated(){
+       this.$router.push(this.path);
+   }
+   ```
+
 3. 后置导航钩子记录home子路径
    
-    ```js
-    beforeRouteLeave(to,from,next){
-      this.path = from.path;
-      next();
+   ```js
+   beforeRouteLeave(to,from,next){
+     this.path = from.path;
+     next();
    }
-
+   ```
 - include和exclude
-
+  
   指定缓存组件name值/指定不缓存组件,属性值为指定组件的name值
   
   ```vue
@@ -367,6 +371,7 @@ vue默认包含一个可直接使用的keep-alive内置组件,用于对内部组
   ```
 
 - 控制滚动行为
+  
   1. 保留路由滚动的位置，必须对该路由组件keep-alive
   2. 创建router实例时，添加滚动控制
   
@@ -379,7 +384,6 @@ vue默认包含一个可直接使用的keep-alive内置组件,用于对内部组
     }
   }
   ```
-  
 
 ## 相关属性
 
@@ -405,7 +409,7 @@ Array类型值，包含当前路由的所有嵌套路径片段的路由记录，
 
 ```js
 router.matcher = new VueRouter({
-	routes: baseRoutes  // 路由配置
+    routes: baseRoutes  // 路由配置
 }).matcher;
 ```
 
@@ -416,10 +420,10 @@ router.matcher = new VueRouter({
 // export baseRouters(基础路由) adminRouters(权限路由) errorRouters(404兜底路由)
 ```
 
-````js
+```js
 // index.js
 // 初始状态仅初始化基础路由
-````
+```
 
 ```js
 // auth.js
@@ -470,48 +474,3 @@ router.beforeEach((to, from, next) => {
 // router鉴权
 import "./router/auth";
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

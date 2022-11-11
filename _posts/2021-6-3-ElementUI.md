@@ -391,6 +391,19 @@ closeDialog() {
 
 弹窗需要单独接口返回状态下，弹窗创建请求接口得到弹窗状态；弹窗开启时clone弹窗状态作为临时状态，弹窗编辑修改临时状态，修改成功则同步为弹窗状态；
 
+### Popover弹出框
+
+**控制定位**
+
+```html
+<el-popover width="200" popper-options="poperOptions">
+  <el-button slot="reference">UI控件</el-button>
+</el-popover>
+<script>
+  const poperOptions = { modifiers: [ { name:'offset', options: { offset: [0,2] } } ] }
+</script>
+```
+
 ### Table表格
 
 #### 内置插槽

@@ -7,7 +7,7 @@ author:     page
 header-img: img/home-bg-geek.jpg
 catalog: true
 tags:
-    - vue
+    - 类库
 ---
 
 # Element-UI
@@ -187,9 +187,122 @@ uploadReady: false, // 上传文件就绪
  }
 ```
 
+分片上传
+
+```html
+<!-- 基于七牛元sdk为例 -->
+<template>
+  <el-upload
+    class="mt-24"
+    action="/"
+    :on-change="handleUploadChange"
+    :auto-upload="false"
+    :show-file-list="false"
+    drag
+    multiple
+  >
+    <slot></slot>
+  </el-upload>
+</template>
+
+<script>
+  import * as qiniu from 'qiniu-js';
+
+  export default {
+    props: {
+      uploadList: { type: Array, default: () => [] },
+      fileTypeLimit: { type: Array, default: () => ['image/jpeg', 'image/png', 'image/gif'] },
+      fileSizeLimit: { type: Number, default: 20 }
+    },
+
+    methods: {
+      // 1. 添加上传
+      handleUploadChange(file) {
+        if (!this.fileTypeLimit.includes(file.raw.type)) return;
+        if (file.size / 1024 / 1024 > this.fileSizeLimit) {
+          this.$message.warn(`图片大小不正确，请重新上传小于${this.fileSizeLimit}M的图片！`);
+          return;
+        }
+        this.uploadList.push(file);
+        this.createPreviewURL(file);
+        this.uploadFile(file);
+      },
+
+      // 2. 创建任务
+      async uploadFile(file) {
+        const arr = file.name.split('.');
+        const ext = arr.pop();
+        const name = `${arr.join('.')}_${new Date().getTime()}.${ext}`;
+        const {
+          data: { key, token }
+        } = await this.$http.getQiNiuToken({ fileName: name });
+        file.key = key;
+        file.token = token;
+        file.observable = qiniu.upload(file.raw, key, token);
+        this.handleStartUpload(file);
+      },
+
+      // 开始上传
+      handleStartUpload(file) {
+        const next = (res) => {
+          file.uploadInfo = res.uploadInfo;
+          file.percentage < res.total.percent && (file.percentage = res.total.percent);
+        };
+        const error = () => {
+          file.status = 'fail';
+        };
+        const complete = () => {
+          file.status = 'success';
+        };
+        file.status = 'uploading';
+        file.subscription = file.observable.subscribe(next, error, complete);
+      },
+
+      // 暂停上传
+      handleStopUpload(file) {
+        file.subscription.unsubscribe();
+        file.status = 'stop';
+      },
+
+      // 取消上传
+      handleCancelUpload(file) {
+        const list = this.uploadList.filter((item) => item !== file);
+        this.$emit('update:uploadList', list);
+        file.subscription.unsubscribe();
+        file.uploadInfo && qiniu.deleteUploadedChunks(file.token, file.key, file.uploadInfo);
+      },
+
+      // 重新上传
+      async handleReUpload(file) {
+        file.status = 'ready';
+        file.percentage = 0;
+        const { token, key, uploadInfo } = file;
+        file.uploadInfo && qiniu.deleteUploadedChunks(token, key, uploadInfo);
+        this.uploadFile(file);
+      },
+
+      // 清空上传
+      clearUploadFiles() {
+        this.uploadList.forEach((file) => file.status === 'uploading' && this.handleCancelUpload(file));
+        this.$emit('update:uploadList', []);
+      },
+
+      // 临时预览图片
+      createPreviewURL(file) {
+        const fileReader = new FileReader();
+        fileReader.onload = () => {
+          fileReader.result && (file.previewURL = fileReader.result);
+        };
+        fileReader.readAsDataURL(file.raw);
+      }
+    }
+  };
+</script>
+```
+
 ## Dialog弹窗
 
-```vue
+```html
 // template
 <Dialog1 :dialog.sync="dialogName" />
 <Dialog2 :dialog.sync="dialogName"/>
@@ -199,7 +312,7 @@ uploadReady: false, // 上传文件就绪
 this.dialogName = 'dialog1';
 ```
 
-```vue
+```html
 // Dialog1
 <template>
     <el-dialog :visible="dialogName === 'dialog1'">
@@ -277,6 +390,19 @@ closeDialog() {
 弹窗来自外部状态，则弹窗开启时clone外部状态作为临时状态，弹窗编辑修改临时状态，修改成功则同步至外部状态；
 
 弹窗需要单独接口返回状态下，弹窗创建请求接口得到弹窗状态；弹窗开启时clone弹窗状态作为临时状态，弹窗编辑修改临时状态，修改成功则同步为弹窗状态；
+
+### Popover弹出框
+
+**控制定位**
+
+```html
+<el-popover width="200" popper-options="poperOptions">
+  <el-button slot="reference">UI控件</el-button>
+</el-popover>
+<script>
+  const poperOptions = { modifiers: [ { name:'offset', options: { offset: [0,2] } } ] }
+</script>
+```
 
 ### Table表格
 
@@ -406,7 +532,7 @@ async validMultiForm() {
 
 自定义校验报错时，可借助form-item:error控制错误信息：```:required/rules前置检验 + :error="errorMsg"控制错误信息 + 校验后nextTick设置error错误信息``` 附：form-item:foucs/每次检验前需重置error变量
 
-**注：**表单对象的状态(`el-form:model`)为数组情况，可以`:model="{formData}"`，此时prop路径增加前缀`prop="formData.index.attr"`
+**注：** 表单对象的状态(`el-form:model`)为数组情况，可以`:model="{formData}"`，此时prop路径增加前缀`prop="formData.index.attr"`
 
 #### 仅提交时校验
 

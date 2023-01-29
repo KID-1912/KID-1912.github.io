@@ -7,7 +7,7 @@ author:     page
 header-img: img/post-bg-css3.webp
 catalog: true
 tags:
-    - CSS
+    - 开发框架
 ---
 
 # WindiCSS

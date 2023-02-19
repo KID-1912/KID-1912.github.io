@@ -188,6 +188,22 @@ ES7新方法，设置字符串最小长度，不足部分用指定字符填充
 
 `Math.round()`四舍五入取整
 
+## Date
+
+**计算倒计时**
+
+```js
+function getDiffTime(timeStamp) {
+  // 计算时分秒
+  let hours = Math.floor(timeStamp / 1000 / 60 / 60);
+  let minutes = Math.floor((timeStamp / 1000 / 60) % 60);
+  let seconds = Math.floor((timeStamp / 1000) % 60);
+  return `${hours < 10 ? "0" : ""}${hours}:${minutes < 10 ? "0" : ""}${minutes}:${
+    seconds < 10 ? "0" : ""
+  }${seconds}`;
+}
+```
+
 ## API相关
 
 ### 

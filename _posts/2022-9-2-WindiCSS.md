@@ -42,6 +42,8 @@ import 'windi.css'
 
 ## Windi 配置
 
+**基础配置**
+
 ```js
 // windi.config.js
 import { defineConfig } from 'windicss/helpers'
@@ -52,6 +54,19 @@ export default defineConfig({
     include: ['**/*.{vue,html,jsx,tsx}'],
     // if you are excluding files, make sure you always include node_modules and .git
     exclude: ['node_modules', '.git', 'dist'],
+  },
+});
+```
+
+ **Tailwind CSS继承配置**
+
+```js
+import { defineConfig } from "windicss/helpers";
+
+export default defineConfig({
+  /* 配置项... */
+  corePlugins: { // corePlugins控制类开启
+    container: false,
   },
 });
 ```

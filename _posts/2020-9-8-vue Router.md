@@ -405,6 +405,8 @@ Array类型值，包含当前路由的所有嵌套路径片段的路由记录，
 
 ```router.addRoutes(RouteOptions: Array)```
 
+```
+
 ### 重置路由
 
 ```js

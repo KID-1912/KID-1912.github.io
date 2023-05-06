@@ -14,11 +14,11 @@ tags:
 
 `Object.keys(obj)` 返回对象可遍历属性组成的数组
 
-`hasOwnProperty(key)` 判断key是否属于非继承的属性
+`obj.hasOwnProperty(key)` 判断key是否属于非继承的属性
 
 ## Array
 
-**数组中随机取num个不重复项**
+**随机取n个不重复项**
 
 ```js
 function randomArr(arr, num) {
@@ -40,10 +40,11 @@ function randomArr(arr, num) {
 
 ### 闭包
 
-1. 闭包并不是js才有的内容
-2. 一般情况下，全局下调用函数会为给函数创建一个临时执行环境，当函数执行完成即销函数活动对象，也就是局部变量会被清除，但闭包能够让局部变量的值始终保持在内存中
-3. js中闭包常以函数嵌套方式形成，我们可以让一个函数内通过嵌套一个函数(内层函数)，如果内层函数在全局下被赋予导致内层函数保存在内存中，那么由于内层函数依赖外层函数，内层函数也会被保留在内存中，不会被垃圾回收；
-4. 这个函数就是闭包
+闭包并不是js才有的内容;
+
+一般情况下，全局下调用函数会为给函数创建一个临时执行环境，当函数执行完成即销函数活动对象，也就是局部变量会被清除，但闭包能够让局部变量的值始终保持在内存中;
+
+js中闭包常以函数嵌套方式形成，我们可以让一个函数内通过嵌套一个函数(内层函数)，如果内层函数在全局下被赋予导致内层函数保存在内存中，那么由于内层函数依赖外层函数，内层函数也会被保留在内存中，不会被垃圾回收;
 
 ### 递归
 
@@ -80,6 +81,10 @@ console.log(add(1)(2)(3)+1);  // 最终返回的_add自动调用toString的隐�
 
 ### 防抖节流
 
+防抖：等待一定时间后执行最后一次触发事件的回调函数
+
+节流：每隔一定时间执行一次所有触发事件的回调函数
+
 防抖
 
 ```js
@@ -94,7 +99,7 @@ function debounce(fn,delay){
 }
 ```
 
-节流
+节流（此处待确定）
 
 ```js
 function throttle(fun, delay) {
@@ -198,12 +203,10 @@ function getDiffTime(timeStamp) {
   let hours = Math.floor(timeStamp / 1000 / 60 / 60);
   let minutes = Math.floor((timeStamp / 1000 / 60) % 60);
   let seconds = Math.floor((timeStamp / 1000) % 60);
-  return `${hours < 10 ? "0" : ""}${hours}:${minutes < 10 ? "0" : ""}${minutes}:${
-    seconds < 10 ? "0" : ""
-  }${seconds}`;
+  return `${String(hours).padStart(2,"0")}:
+          ${String(minutes).padStart(2,"0")}:
+          ${String(seconds).padStart(2,"0")}`;
 }
 ```
 
 ## API相关
-
-### 

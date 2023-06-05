@@ -209,4 +209,28 @@ function getDiffTime(timeStamp) {
 }
 ```
 
-## API相关
+## Promise
+
+## async/await
+
+Promise语法糖，await 后代码将作为 promise 回调处理
+
+```js
+const result = [];
+for(const id in list){
+  const item = await fetch({id}; // 统一执行环境下多个await，阻塞
+  result.push(item);
+}
+return result;
+```
+
+```js
+const fetchPromises = list.map(async (id) => { // 多执行环境多await，非阻塞
+  const item = await fetch(id);
+  return item;
+});
+const result = await Promise.all(fetchPromises);
+return result;
+```
+
+## API

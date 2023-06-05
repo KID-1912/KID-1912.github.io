@@ -579,7 +579,7 @@ function validator(rule, value, callback) {
 
 ## Radio/Checkbox单选/多选
 
-自定义内容
+**自定义内容**
 
 ```vue
 <el-radio-group v-model="form" @change="onChange">
@@ -587,6 +587,40 @@ function validator(rule, value, callback) {
   <el-radio :label="1">111</el-radio>
 </el-radio-group>
 .el-checkbox:flex + order自定义选框与内容顺序
+```
+
+**全选/半选计算实现**
+
+```html
+<div class="t-light">
+  <el-checkbox :value="selectAll" :indeterminate="isIndeterminate" @change="handleSelectAll">全选</el-checkbox>
+  已选中 <span class="t-theme">{{ selectList.length }}</span>条
+</div>
+```
+
+```js
+computed: {
+  isIndeterminate(){
+    const count = this.selectList.length;
+    const total = this.itemsList.length;
+    return count && count < total;
+  },
+  selectAll(){
+    const count = this.selectList.length;
+    const total = this.itemsList.length;
+    return count === total;
+  }
+},
+methods: {
+  // 全选/取消全选
+  handleSelectAll() {
+    if(this.selectAll){
+      this.selectIdList = [];
+    } else {
+      this.selectIdList = [...this.itemsList];
+    }
+  }
+}
 ```
 
 ## Message消息

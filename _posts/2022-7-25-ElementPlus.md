@@ -76,6 +76,9 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 
 <!-- ElIcon控制样式 -->
 <el-icon class="no-inherit" color="#409EFC" :size="16">
+
+<!-- 组件icon值 -->
+<el-button type="primary" icon="Edit">修改</el-button>
 ```
 
 ### 自动导入
@@ -110,6 +113,7 @@ module.export = {
 
 ```js
 // webpack.config.js
+const { FileSystemIconLoader } = require('unplugin-icons/loaders')
 Components({
   resolvers: [
     IconsResolver({

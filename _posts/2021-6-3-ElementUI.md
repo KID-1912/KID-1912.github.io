@@ -28,7 +28,7 @@ tags:
 
 ## 布局
 
-#### 结构布局
+### 结构布局
 
 - \<el-container>：外层容器
 - \<el-header>：顶栏容器
@@ -36,7 +36,7 @@ tags:
 - \<el-main>：主要区域容器
 - \<el-footer>：底栏容器
 
-#### 内容布局
+### 内容布局
 
 - \<el-page-header>：页头
 - \<el-card>：卡片
@@ -44,7 +44,7 @@ tags:
 - \<el-image>：图片
 - \<el-drawer>：抽屉
 
-#### 弹性布局
+### 弹性布局
 
 - \<el-row> + \<el-col>
   - \<el-col :span="12">（分为24份span）
@@ -56,9 +56,9 @@ tags:
 
 ## 组件
 
-#### Pagination分页
+### Pagination分页
 
-- 组件
+**组件**
 
 ```html
   <el-pagination
@@ -73,7 +73,7 @@ tags:
   </el-pagination>
 ```
 
-- 状态管理
+**状态**
 
 ```js
   data() {
@@ -89,7 +89,7 @@ tags:
   }
 ```
 
-- 请求
+**请求**
 
 ```js
 fetch(){
@@ -100,11 +100,11 @@ fetch(){
 }
 ```
 
-## Upload上传
+### Upload上传
 
-单文件上传
+#### 单文件上传
 
-- Upload组件
+**Upload组件**
 
 ```html
 <!-- 此处为分离上传操作 -->
@@ -133,14 +133,14 @@ fetch(){
 </el-upload>
 ```
 
-- 状态管理
+**状态管理**
 
 ```js
 uploading: false, // 上传中
 uploadReady: false, // 上传文件就绪
 ```
 
-- 相关操作方法
+**相关操作方法**
 
 ```js
  uploadChange(file, fileList) {
@@ -187,7 +187,7 @@ uploadReady: false, // 上传文件就绪
  }
 ```
 
-分片上传
+#### 分片上传
 
 ```html
 <!-- 基于七牛元sdk为例 -->
@@ -300,7 +300,7 @@ uploadReady: false, // 上传文件就绪
 </script>
 ```
 
-## Dialog弹窗
+### Dialog弹窗
 
 ```html
 // template
@@ -327,13 +327,13 @@ this.dialogName = 'dialog1';
 this.$emit('update:dialogName','');
 ```
 
-**注：**```destroy-on-close```属性即关闭弹窗后刷新组件，仅当弹窗状态由唯一内容子组件时具备重置弹窗状态功能；否则请为内容容器添加`v-if`解决状态残留；
+**注：** `destroy-on-close`属性即关闭弹窗后刷新组件，仅当弹窗状态由唯一内容子组件时具备重置弹窗状态功能；否则请为内容容器添加`v-if`解决状态残留；
 
 #### 合并弹窗
 
 对管理后台(admin)的表格数据行进行增删改查操作，可以合并操作弹窗
 
-- 组件
+**组件**
 
 ```html
 <el-dialog
@@ -350,7 +350,7 @@ this.$emit('update:dialogName','');
 </el-dialog>
 ```
 
-- 状态管理
+**状态管理**
 
 ```js
 this.dialogTitle = {
@@ -366,7 +366,7 @@ dialogVisible(){
 }
 ```
 
-- 开启/关闭弹窗
+**开启/关闭弹窗**
 
 ```js
 openDialog(name, editRecord) {
@@ -383,7 +383,7 @@ closeDialog() {
 
 #### 弹窗嵌套
 
-将内层`dialog`的`append-to-body`值设为 true 解决`modal`覆盖问题
+将内层 `dialog` 的`append-to-body`值设为 true 解决`modal`覆盖问题
 
 #### 弹窗状态
 
@@ -433,7 +433,9 @@ empty(空数据占位)
 
 #### 单选行
 
-单选行：```el-table-column```内容为Radio单选框组件实现
+- 列内容为单选框组件 `Radio` 简单实现
+
+- 或采用多选行，选择操作后手动实现仅单选
 
 #### 多选行
 
@@ -453,11 +455,52 @@ onSelectionChange(list){
 this.toggleRowSelection(row, true);
 ```
 
-#### 默认部分选中的多选行
+**默认部分选中的多选行**
 
-```toggleRowSelection```的默认选中要求参数```row```，不适用于分页数据的默认多选；
+`toggleRowSelection` 的默认选中要求参数 `row`，不适用于分页数据的默认多选；
 
-```el-table-column```内容为Checkoutbox多选框组件实现
+借助列内容为 `Checkoutbox` 多选框组件，实现分页数据的默认多选；
+
+#### 排序
+
+**基础排序**
+
+```html
+<el-table :default-sort="{ prop: 'number', order: 'descending' }">
+  <el-table-column prop="rank" sortable :sort-orders="['descending', 'ascending']"></el-table-column>
+  <el-table-column prop="number" sortable :sort-orders="['descending', 'ascending']"></el-table-column>
+</el-table>
+```
+
+`sort-orders`：自定义支持的排序类型与切换顺序，`null` 值即无排序类型
+
+**自定义排序**
+
+`sortable: custom`：自定义排序，需自行监听 `sort-change` 事件编写排序处理
+
+```html
+<el-table :default-sort="{ prop: 'number', order: 'descending' }" @sort-change="onSortChange">
+  <el-table-column prop="rank" sortable="custom"></el-table-column>
+  <el-table-column prop="number" sortable="custom"></el-table-column>
+</el-table>
+```
+
+```js
+// 自定义排序：空值置底
+const onSortChange = function ({ column, prop, order }) {
+  const bottomValue =
+    order === 'ascending' ? Number.Infinity : Number.NEGATIVE_INFINITY;
+  tableData.value.sort((a, b) => {
+    const valueA = a === null ? bottomValue : a[prop];
+    const valueB = b === null ? bottomValue : b[prop];
+    if (order === 'ascending') {
+      return valueA - valueB;
+    } else {
+      return valueB - valueA;
+    }
+  });
+};
+```
 
 #### 重复列
 
@@ -466,46 +509,50 @@ this.toggleRowSelection(row, true);
 | xxx | **  | xxx | **  | xx  | **  |
 | xxx | **  | xxx | **  | xx  | **  |
 
-1. 假设tableList为表格数据，基于tableList.length计算出最终显示行数，行数由数组lineLength决定
-   
-   ```js
-   // 非空时计算行数，空数组则默认按空数据显示表格
-   if (this.tableList.length > 0) {
-     let num = Math.ceil(this.tableList.length / 3); // 3列复用
-     this.lineLength = new Array(num).fill("");
-   }
-   ```
+**计算行数**
 
-2. $index行索引 + index数据索引计算出位置对应显示数据
-   
-   ```vue
-   <el-table :data="lineLength">
-     <template v-for="(num, index) in 3">
-       <el-table-column label="名称" :key="`${num}.name`">
-         <template #default="{ $index }">
-           <div v-if="$index * 3 + index < tableList.length">
-               {{ tableList[$index * 3 + index].name }}
-            </div>
-           <span v-else>-</span>
-         </template>
-       </el-table-column>
-       <el-table-column label="数量" :key="`${num}.count`">
-         <template #default="{$index}">
-           <div v-if="$index * 3 + index < tableList.length">
-               {{ tableList[$index * 3 + index].count }}
-            </div>
-           <span v-else>-</span>
-         </template>
-       </el-table-column>
-     </template>
-   </el-table>
-   ```
+假设tableList为表格数据，基于tableList.length计算出最终显示行数，行数由数组lineLength决定
+
+```js
+// 非空时计算行数，空数组则默认按空数据显示表格
+if (this.tableList.length > 0) {
+  let num = Math.ceil(this.tableList.length / 3); // 3列复用
+  this.lineLength = new Array(num).fill("");
+}
+```
+
+**展示数据**
+
+`$index` 行索引 + `index`数据索引计算出位置对应显示数据
+
+```vue
+<el-table :data="lineLength">
+  <template v-for="(num, index) in 3">
+    <el-table-column label="名称" :key="`${num}.name`">
+      <template #default="{ $index }">
+        <div v-if="$index * 3 + index < tableList.length">
+            {{ tableList[$index * 3 + index].name }}
+         </div>
+        <span v-else>-</span>
+      </template>
+    </el-table-column>
+    <el-table-column label="数量" :key="`${num}.count`">
+      <template #default="{$index}">
+        <div v-if="$index * 3 + index < tableList.length">
+            {{ tableList[$index * 3 + index].count }}
+         </div>
+        <span v-else>-</span>
+      </template>
+    </el-table-column>
+  </template>
+</el-table>
+```
 
 ### Form表单
 
 #### 检验实现
 
-一般通过```el-form:model + el-form-item:prop:rules/required```实现检验，且prop支持```:prop="属性.index.属性"```属性路径式访问
+一般通过 `el-form:model + el-form-item:prop:rules/required` 实现检验，且prop支持 `:prop="属性.index.属性"` 属性路径式访问
 
 `$form.validate(callback)`传入参数为回调函数，回调函数Function(boolean, object)返回校验结果：是否校验通过，未通过检验项信息；若未传入回调函数，则校验结果以validate返回的promise结果中获取；
 
@@ -530,9 +577,9 @@ async validMultiForm() {
 },
 ```
 
-自定义校验报错时，可借助form-item:error控制错误信息：```:required/rules前置检验 + :error="errorMsg"控制错误信息 + 校验后nextTick设置error错误信息``` 附：form-item:foucs/每次检验前需重置error变量
+自定义校验报错时，可借助form-item:error控制错误信息：`:required/rules前置检验 + :error="errorMsg"控制错误信息 + 校验后nextTick设置error错误信息` 附：form-item:foucs/每次检验前需重置error变量
 
-**注：** 表单对象的状态(`el-form:model`)为数组情况，可以`:model="{formData}"`，此时prop路径增加前缀`prop="formData.index.attr"`
+**注：** 表单对象的状态(`el-form:model`)为数组情况，可以 `:model="{formData}"`，此时prop路径增加前缀 `prop="formData.index.attr"`
 
 #### 仅提交时校验
 
@@ -577,7 +624,7 @@ function validator(rule, value, callback) {
 }
 ```
 
-## Radio/Checkbox单选/多选
+### Radio/Checkbox单选/多选
 
 **自定义内容**
 
@@ -623,7 +670,7 @@ methods: {
 }
 ```
 
-## Message消息
+### Message消息
 
 ```js
 // element.js
@@ -649,7 +696,7 @@ function $message(options) {
 });
 ```
 
-## Loading加载
+### Loading加载
 
 ```js
 // element.js
@@ -671,7 +718,7 @@ function $loading(handle, options) {
 this.$loading(this.fetch,"数据加载中...");
 ```
 
-## Menu侧边栏
+### Menu侧边栏
 
 ```vue
 <template>
@@ -746,7 +793,7 @@ export default {
 </style>
 ```
 
-## Breadcrumb面包屑
+### Breadcrumb面包屑
 
 ```vue
 <template>
@@ -784,7 +831,7 @@ export default {
 </script>
 ```
 
-## Scrollbar滚动
+### Scrollbar滚动
 
 ```vue
 <div style="height: 560px">
@@ -803,11 +850,11 @@ export default {
 </style>
 ```
 
-## Collapse折叠
+### Collapse折叠
 
-默认空格键能控制弹起或收起，绑定 keyup.stop 可阻止
+默认空格键能控制弹起或收起，绑定 `keyup.stop` 可阻止
 
-## InfiniteScroll无限滚动
+### InfiniteScroll无限滚动
 
 ```vue
 <div
@@ -821,4 +868,14 @@ export default {
 </div>
 ```
 
-`infinite-scroll-immediate`控制是否立即加载，默认会自动加载；仅值为'false'(此处非布尔值)禁用默认加载；
+`infinite-scroll-immediate` 控制是否立即加载，默认会自动加载；仅值为'false'(此处非布尔值)禁用默认加载；
+
+## 样式覆盖
+
+**覆盖类样式**
+
+原则：原样式来自某个类就覆盖该类
+
+**覆盖变量值**
+
+大部分组件存在样式统一时

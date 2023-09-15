@@ -1,7 +1,7 @@
 ---
 layout:     post
-title:      WindiCss
-subtitle:   基于 Web(es6) canvas 构建的轻量级 Excel 开发库
+title:      X-Spreadsheet
+subtitle:   基于 JavaScript 快速构建 Web Excel
 date:       2021-10-31
 author:     page
 header-img: img/post-bg-excel.jpg

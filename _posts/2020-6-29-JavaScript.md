@@ -156,6 +156,77 @@ function throttle(fun, delay) {
 }
 ```
 
+### bind call apply
+
+**call实现**
+
+```
+Function.prototype.hycall = function(thisArg, ...args) {
+  // 1.获取需要被执行的函数
+  var fn = this
+
+  // 2.对thisArg转成对象类型(防止它传入的是非对象类型)
+  thisArg = (thisArg !== null && thisArg !== undefined) ? Object(thisArg): window
+
+  // 3.调用需要被执行的函数
+  thisArg.fn = fn
+  var result = thisArg.fn(...args)
+  delete thisArg.fn
+
+  // 4.返回结果
+  return result
+}
+```
+
+**apply实现**
+
+```
+Function.prototype.hyapply = function(thisArg, argArray) {
+  // 1.获取到要执行的函数
+  var fn = this
+
+  // 2.处理绑定的thisArg
+  thisArg = (thisArg !== null && thisArg !== undefined) ? Object(thisArg): window
+
+  // 3.执行函数
+  thisArg.fn = fn
+  argArray = argArray || []
+  var result = thisArg.fn(...argArray)
+  delete thisArg.fn
+
+  // 4.返回结果
+  return result
+}
+```
+
+**bind实现**
+
+```js
+Function.prototype.hybind = function(thisArg, ...argArray) {
+  // 1.获取到真实需要调用的函数
+  var fn = this
+
+  // 2.绑定this
+  thisArg = (thisArg !== null && thisArg !== undefined) ? Object(thisArg): window
+
+  function proxyFn(...args) {
+    // 3.将函数放到thisArg中进行调用
+    thisArg.fn = fn
+    // 特殊: 对两个传入的参数进行合并
+    var finalArgs = [...argArray, ...args]
+    var result = thisArg.fn(...finalArgs)
+    delete thisArg.fn
+
+    // 4.返回结果
+    return result
+  }
+
+  return proxyFn
+}
+```
+
+
+
 ## String
 
 `str.trim()`

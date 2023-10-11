@@ -548,6 +548,23 @@ if (this.tableList.length > 0) {
 </el-table>
 ```
 
+#### 无限滚动
+
+普通表格滚动只需设置 `el-table` 高度
+
+无限滚动加载表格数据，推荐 [`el-table-infinite-scroll`](https://yujinpan.github.io/el-table-infinite-scroll/) 插件实现
+
+```html
+<el-table
+  :data="tableData"
+  v-el-table-infinite-scroll="getTableData"
+  :infinite-scroll-disabled="loading || isEnd"
+  height="100%"
+>
+```
+
+更多细节实现参考本文 **InfiniteScroll无限滚动** 章节
+
 ### Form表单
 
 #### 检验实现
@@ -858,7 +875,7 @@ export default {
 
 ```vue
 <div
-  v-infinite-scroll="scrollMore"
+  v-infinite-scroll="loadData"
   infinite-scroll-distance="40"
   :infinite-scroll-disabled="loading || isEnd"
   infinite-scroll-immediate="false"
@@ -868,7 +885,40 @@ export default {
 </div>
 ```
 
-`infinite-scroll-immediate` 控制是否立即加载，默认会自动加载；仅值为'false'(此处非布尔值)禁用默认加载；
+`infinite-scroll-immediate` 控制是否立即加载，默认会自动加载；
+
+仅值为'false'(此处非布尔值)禁用默认加载；
+
+**注：** 滚动容器必须具备有效高度
+
+**参考**
+
+```js
+const loading = ref(false);
+const page = ref({ index: 0, total: 0, size: 10 }); // 分页状态
+const isEnd = computed(() => {
+  const { index, size, total } = page.value;
+  return index * size > total;
+});
+const loadData= (pageIndex) => {
+  page.value.index =
+    typeof pageIndex === 'number' ? pageIndex : page.value.index + 1;
+  const { data } = await http.fetch({index: page.value.index});
+  if (pageIndex === 1) {
+    list.value = data;
+  } else {
+    list.value.push(...data);
+  }
+}
+```
+
+```html
+<el-empty v-if="!loading && !list.length" />
+<div v-else-if="loading">
+  <el-button icon="Loading" text>加载中...</el-button>
+</div>
+<div v-else-if="isEnd">已经到底了~</div>
+```
 
 ## 样式覆盖
 

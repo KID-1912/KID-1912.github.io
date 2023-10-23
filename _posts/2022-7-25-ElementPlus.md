@@ -151,3 +151,18 @@ Icons({
 vite详见  [element-plus-best-practices](https://github.com/sxzz/element-plus-best-practices/blob/db2dfc983ccda5570033a0ac608a1bd9d9a7f658/vite.config.ts#L21-L58)
 
 自动导入插件 [unplugin-icons](https://github.com/antfu/unplugin-icons)
+
+## 分页
+
+推荐使用 `@update:current-page` 替代 `@current-page`
+
+```html
+<el-pagination
+  :current-page="1"
+  :page-size="10"
+  :total="0"
+  @update:current-page="handlePageChange"
+  layout="prev, pager, next"
+  background
+></el-pagination>
+```

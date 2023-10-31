@@ -2,7 +2,7 @@
 layout:     post
 title:      websocket双向通信
 subtitle:   使用websocket进行双向通信开发
-date:       2021-01-4
+date:       2021-01-04
 author:     page
 header-img: post-bg-alibaba.jpg
 catalog: true
@@ -10,7 +10,47 @@ tags:
     - HTTP
 ---
 
-### 事件通信
+# websocket
+
+**特点**
+
+- 双向通信
+- 数据格式比较轻量，性能开销小，通信高效
+- 没有同源策略导致的跨域问题
+- 建立在TCP之上，可以发送文本，也可以发送二进制数据
+
+## 基本使用
+
+**安装**
+
+```js
+npm install --save socket.io
+```
+
+**初始化**
+
+服务端初始化一个socket.io实例并监听connection事件
+
+```js
+var app = require('express')();
+var http = require('http').createServer(app);
+var io = require('socket.io')(http);
+io.on('connection', socket => {
+ // 每个socket都是一个连接实例
+ console.log('a user connected')
+});
+http.listen(3000, () => {  console.log('server is runing') });
+```
+
+**链接**
+
+前端加载socket.io-client，使用全局方法io连接
+
+```html
+ var socket = io(); // 默认连接到当前页面主机
+```
+
+## 事件通信
 
 **web**
 
@@ -42,7 +82,7 @@ io.on('connection', socket => { // 监听自带事件
 });
 ```
 
-### 多路由分发
+## 多路由分发
 
 **web**
 
@@ -83,7 +123,7 @@ var news = io
   });
 ```
 
-### 完成回调
+## 完成回调
 
 **server**
 
@@ -102,14 +142,15 @@ io.on('connection', function (socket) {
 <script>
   var socket = io();
   socket.on('connect', function () { connect能同时监听连接和事件
-    socket.emit('ferret', 'tobi', function (data) { //确认后端处理完成并执行回调
+    //确认后端处理完成并执行回调
+    socket.emit('ferret', 'tobi', function (data) { 
       console.log(data); // 'success'
     });
   });
 </script>
 ```
 
-### 广播消息
+## 广播消息
 
 ```js
 io.on('connection', function (socket) {
@@ -117,7 +158,7 @@ io.on('connection', function (socket) {
 });
 ```
 
-### Socket
+## Socket
 
 `socket.id`
 

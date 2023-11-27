@@ -901,6 +901,7 @@ const isEnd = computed(() => {
   return index * size > total;
 });
 const loadData= (pageIndex) => {
+  loading.value = true;
   page.value.index =
     typeof pageIndex === 'number' ? pageIndex : page.value.index + 1;
   const { data } = await http.fetch({index: page.value.index});
@@ -909,6 +910,7 @@ const loadData= (pageIndex) => {
   } else {
     list.value.push(...data);
   }
+  page.value.total = ...;
 }
 ```
 

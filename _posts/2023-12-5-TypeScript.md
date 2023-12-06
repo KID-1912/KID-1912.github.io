@@ -4,7 +4,7 @@ title:      TypeScript
 subtitle:   一套开源内容编辑和实时协作工具，基于ProseMirror
 date:       2023-11-27
 author:     page
-header-img: img/tiptap.png
+header-img: img/TypeScript.png
 catalog: true
 tags:
     - 类库

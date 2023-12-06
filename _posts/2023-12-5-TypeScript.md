@@ -7,7 +7,7 @@ author:     page
 header-img: img/TypeScript.png
 catalog: true
 tags:
-    - 类库
+    - JavaScript
 ---
 
 # TypeScript
@@ -184,3 +184,116 @@ function getDomClassList(id: string | Array<string>): string {
   return '';
 };
 ```
+
+### Class类
+
+为class类增加类型描述
+
+```ts
+class Book{
+  pageTotal: number;
+  constructor(name: string, author: Author){
+    
+  }
+  
+  getBookPageTotal(): number {
+    return  this.pageTotal;  
+  }
+}
+```
+
+## any
+
+任意类型，即所有其他类型，这使TypeScript无法类型检查从而可能导致不可预见错误；
+
+## unknown
+
+任意类型，但是保留类型检查
+
+通过类型断言，在未标注类型下赋予变量类型，让开发者按预期类型处理
+
+```ts
+(param as unknown[]).map(item => item);
+(str as any).handler();
+const { name, job = {} as IJob } = user;
+```
+
+## 联合/交叉类型
+
+**类型别名**
+
+通过类型别名实现类型复用
+
+```ts
+type computed = (unknown) => string;
+
+const name: computed = (person) => person.name;
+const id: computed = (person) => person.id;
+```
+
+或者类似 `Interface` 作用
+
+```ts
+type Person {
+  name: string,
+  age: number
+}
+```
+
+**联合类型**
+
+通过多类型配合类型别名创建自定义的联合类型
+
+使用 `|` 或关系联合类型
+
+```ts
+type isSuccess = number | boolean;
+let isSuccess: isSuccess = 0;
+isSuccess = true;
+type User = VisitorUser | CommonUser | VIPUser | AdminUser;
+```
+
+使用 `&` 且关系联合类型
+
+```ts
+const temp = (Animal | Person) & (GameObject)
+```
+
+**字面量联合类型**
+
+变量类型只能是指定值的类型且相等
+
+```ts
+type Status = 'pengding' | 'success' | 'failure';
+type code = 200 | 400 | 500
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

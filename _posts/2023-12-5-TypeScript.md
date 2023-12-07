@@ -68,7 +68,7 @@ const arr: Array<string> = []; // 推荐
 定义接口
 
 ```ts
-interface Article{
+interface Article {
   title: string,
   id: number,
   published: boolean
@@ -193,9 +193,9 @@ function getDomClassList(id: string | Array<string>): string {
 class Book{
   pageTotal: number;
   constructor(name: string, author: Author){
-    
+
   }
-  
+
   getBookPageTotal(): number {
     return  this.pageTotal;  
   }
@@ -268,32 +268,166 @@ type Status = 'pengding' | 'success' | 'failure';
 type code = 200 | 400 | 500
 ```
 
+## 泛型
+
+动态可复用的类型
+
+如配合类型别名创建**工具类型**，其中泛型作为参数存在（主动赋值）
+
+```ts
+type Status<T> = number | boolean | T;
+let status: Status<string> = 'success'
+```
+
+或者在标注类型时，使用泛型表达一个动态的未来类型，并对它复用（自动推导）
+
+```ts
+function fun<T>(param: T): T {
+  return param
+}
+```
+
+## 工具类型
+
+前面提到通过泛型实现工具类型，Ts内置了一些工具类型：
+
+**Partial**
+
+接收一个对象类型，并将这个对象类型的所有属性都标记为可选
+
+```ts
+type User = {
+  name: string;
+  age: number;
+  email: string;
+};
+const girl: Partial<User> ={};
+
+type PartialUser = Partial<{
+  name: string;
+  age: number;
+  email: string;
+}>;
+const boy: PartialUser = {};
+```
+
+**Readonly**
+
+接收一个对象类型，并将这个对象类型的所有属性都标记为只读
+
+```ts
+type ReadonlyUser = Readonly<{
+  name: string;
+  age: number;
+  email: string;
+}>;
+```
+
+**Record**
+
+快速对象类型的键值类型标注
+
+```ts
+type Field = 'name' | 'job' | 'email'
+type User = Record<Field, string>
+const user: User = {
+  name: 'xxx',
+  job: 'worker',
+  email: 'xxx.com'
+};
+const user: Record<string,string> = {
+  name: 'xxx',
+  job: 'worker',
+  email: 'xxx.com'
+};
+```
+
+**Pick & Omit**
+
+Pick：对传入对象类型取其中部分键值类型值作为新类型返回
+
+Omit：对传入对象类型排除部分键值类型值作为新类型返回
+
+```ts
+type BasicInfo = Pick<User, 'name' | 'age'>;
+type MoreInfo = Omit<User, 'name' | 'age'>;
+```
+
+**Exclude & Extract**
+
+Exclude：对联合类型执行差集操作后类型值作为新类型返回
+
+Extract：对联合类型执行交集操作后类型值作为新类型返回
+
+```ts
+type UserProps = 'name' | 'age' | 'email' | 'phone' | 'address';
+type RequiredUserProps = 'name' | 'email';
+
+type OptionalUserProps = Exclude<UserProps, RequiredUserProps>;
+type RequiredUserPropsOnly = Extract<UserProps, RequiredUserProps>;
+```
+
+**Parameters & ReturnType**
+
+Parameters：从函数类型中提取入参类型作为新类型返回
+
+ReturnType：从函数类型中提取返回值类型作为新类型返回
+
+```ts
+type Add = (x: number, y: number) => number;
+
+type AddParams = Parameters<Add>; // [number, number] 类型
+type AddResult = ReturnType<Add>; // number 类型
+
+const addParams: AddParams = [1, 2];
+const addResult: AddResult = 3;
+```
+
+**typeof** 关键字
+
+对一个Js变量值提取Ts类型值作为新类型返回
+
+```ts
+const addHandler = (x: number, y: number) => x + y;
+
+type Add = typeof addHandler; // (x: number, y: number) => number;
+type User = typeof person;
+```
+
+**Awaited**
+
+提取一个 `Promise` 类型的返回值类型 
+
+```ts
+async function getPromise() {
+  return new Promise<string>((resolve) => {
+    setTimeout(() => {
+      resolve("Hello, World!");
+    }, 1000);
+  });
+}
+
+type Result = Awaited<ReturnType<typeof getPromise>>; // string 类型
+```
 
 
 
+## 类型声明.d.ts
 
+类型声明使Ts中类型代码可以脱离Js而存在，独立于 `*.d.ts` 文件，如
 
+```ts
+// 模块声明
+declare module App {
+  create(string?: string): string
+  ...
+}
+// 变量声明
+declare var window: Window & typeof globalThis;
+```
 
+生成类型声明文件：
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+```shell
+tsc index.ts --declaration
+```

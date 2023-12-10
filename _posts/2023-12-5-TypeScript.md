@@ -190,15 +190,24 @@ function getDomClassList(id: string | Array<string>): string {
 为class类增加类型描述
 
 ```ts
-class Book{
+class Book {
   pageTotal: number;
   constructor(name: string, author: Author){
 
   }
 
   getBookPageTotal(): number {
-    return  this.pageTotal;  
+    return  this.pageTotal;  
   }
+}
+
+// public 关键词
+class A {
+  constructor(public name: string, public age: number){
+
+  }
+  private ... // 仅类内可访问
+  protected ...  // 仅类内和子类内可访问
 }
 ```
 
@@ -410,8 +419,6 @@ async function getPromise() {
 type Result = Awaited<ReturnType<typeof getPromise>>; // string 类型
 ```
 
-
-
 ## 类型声明.d.ts
 
 类型声明使Ts中类型代码可以脱离Js而存在，独立于 `*.d.ts` 文件，如
@@ -431,3 +438,93 @@ declare var window: Window & typeof globalThis;
 ```shell
 tsc index.ts --declaration
 ```
+
+在ts开发的npm，需告知类型声明文件位置
+
+```json
+{
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts", // 包的类型声明文件
+}
+```
+
+## 模板字符串类型
+
+ts支持字符串类型额外的模板结构描述，如
+
+```ts
+type Tel = `${number}-${number}`
+type Version = `${number}.${number}.${number}`
+
+type SayHello = `Hello ${string | number}`
+const sayStr: Say =  'Hello name'
+const sayNum: Say =  'Hello 666'
+
+type SayHello<T extends string | number> = `Hello ${T}`;
+```
+
+配合联合类型，得到更多组合模式的联合类型
+
+```ts
+type Brand = 'iphone' | 'xiaomi' | 'honor';
+type Memory = '16G' | '64G';
+type ItemType = 'official' | 'second-hand';
+
+type SKU = `${Brand}-${Memory}-${ItemType}`;
+```
+
+## TypeScript编译
+
+Ts编译主要负责语法降级和类型定义的生成，编译配置类别包括产物控制、输入与输出控制、类型声明、代码检查等
+
+### 产物控制
+
+**target：** 控制产物语法的 ES 版本
+
+**module:**  控制产物模块化规则
+
+**outDir：** 输出目录
+
+**types：** 仅加载指定类型定义包
+
+```tsconfig
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "lib": ["ES2015"],  // 需要外部lib对语法编译
+    "target": "ES5" // ES5、ES6
+    "outDir": "dist"  // 输出目录
+    types": ["node", react"],  // 仅加载 @types/node、@types/react 类型包
+  }
+}
+```
+
+### 输入控制
+
+**include：** 输入文件范围
+
+**exclude：** 输入文件排除范围
+
+```tsconfig
+{
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "src/excludeDir",
+    "**/*.spec.ts"
+  ]
+}
+```
+
+### 类型相关配置
+
+**declaration：** 是否生成 .d.ts
+
+**emitDeclarationOnly：** 仅生成.d.ts
+
+**noEmit：** 不生成任何文件，仅类型检查
+
+### 类型检查配置
+
+**noImplicitAny：** 是否不允许隐式any存在

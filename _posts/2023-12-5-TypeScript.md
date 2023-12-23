@@ -46,7 +46,7 @@ let a = '你好'
 let b: string = '下午好'
 ```
 
-## 基础类型
+### 基础类型
 
 **数字/字符串/布尔值**
 
@@ -94,7 +94,7 @@ const articleList: Array<Article> = [];
 interface Author {
   name: string,
   artist: Array<Article>
-}
+} 
 ```
 
 ### 枚举

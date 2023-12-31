@@ -922,6 +922,29 @@ const loadData= (pageIndex) => {
 <div v-else-if="isEnd">已经到底了~</div>
 ```
 
+### ImageViewer图片预览
+
+```vue
+<el-image-viewer
+  v-if="showImageViewer"
+  :initial-index="currentPreviewIndex"
+  :url-list="imageUrlList"
+  @close="showImageViewer = false"
+/>
+```
+
+```js
+const showImageViewer = ref(false);
+const currentPreviewIndex = ref();
+const imageUrlList = computed(() => {
+  return assetsList.value.map((item) => transformImageURL(item.path));
+});
+const handlePreviewImage = (index) => {
+  currentPreviewIndex.value = index;
+  showImageViewer.value = true;
+};
+```
+
 ## 样式覆盖
 
 **覆盖类样式**

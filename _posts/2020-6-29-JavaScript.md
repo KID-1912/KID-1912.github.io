@@ -225,8 +225,6 @@ Function.prototype.hybind = function(thisArg, ...argArray) {
 }
 ```
 
-
-
 ## String
 
 `str.trim()`

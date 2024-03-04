@@ -47,8 +47,9 @@ npm install clipboard --save
   <div
     class="btn"
     data-clipboard-target="#content_input"
-    data-clipboard-action="cut"
->点击复制输入框内容</div>
+    data-clipboard-action="cut">
+      点击复制输入框内容
+  </div>
 </div>
 <script>
   new Clipboard('.btn');

@@ -303,3 +303,21 @@ return result;
 ```
 
 ## API
+
+### URL
+
+**创建实例**：`new URL(“合法url,否则报错”)`
+
+**searchParams**
+
+```js
+const URLObject = new window.URL(location.href);
+const cid = URLObject.searchParams.get('cid');
+```
+
+```js
+const hash = router.resolve({ name: 'imageEditor' }).href;
+const URLObject = new window.URL(hash, window.location.origin); // 参数2 设置base origin
+URLObject.searchParams.set('cid','12345');
+console.log(URLObject.href);
+```

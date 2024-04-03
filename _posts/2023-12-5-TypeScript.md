@@ -494,7 +494,7 @@ Ts编译主要负责语法降级和类型定义的生成，编译配置类别包
     "lib": ["ES2015"],  // 需要外部lib对语法编译
     "target": "ES5" // ES5、ES6
     "outDir": "dist"  // 输出目录
-    types": ["node", react"],  // 仅加载 @types/node、@types/react 类型包
+    "types": ["node", react"],  // 仅加载 @types/node、@types/react 类型包
   }
 }
 ```

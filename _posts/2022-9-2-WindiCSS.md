@@ -14,7 +14,9 @@ tags:
 
 [官方文档](https://windicss.org/)  [中文文档](https://cn.windicss.org/)
 
-## 安装
+## 开始
+
+### 安装
 
 **webpack**
 
@@ -22,7 +24,7 @@ tags:
 npm i windicss-webpack-plugin -D
 ```
 
-## 配置
+### 配置
 
 ```js
 const WindiCSSWebpackPlugin = require('windicss-webpack-plugin');
@@ -33,16 +35,17 @@ plugins: [
 ]
 ```
 
-## 引入虚拟模块
+### 引入虚拟模块
 
 ```js
 // main.js
 import 'windi.css'
+import "virtual:windi.css"; // vite
 ```
 
-## Windi 配置
+## 配置
 
-**基础配置**
+### 基础配置
 
 ```js
 // windi.config.js
@@ -58,7 +61,7 @@ export default defineConfig({
 });
 ```
 
- **Tailwind CSS继承配置**
+### 继承配置
 
 ```js
 import { defineConfig } from "windicss/helpers";
@@ -69,4 +72,13 @@ export default defineConfig({
     container: false,
   },
 });
+```
+
+### 预检样式
+
+```js
+preflight: false // 关闭所有预定义样式
+preflight: {
+  safelist: 'h1 h2 h3 p img', // 仅开启白名单样式
+}
 ```

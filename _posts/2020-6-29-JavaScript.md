@@ -36,6 +36,10 @@ function randomArr(arr, num) {
 }
 ```
 
+**创建长度为n的空项数组**
+
+`Array.from({ length: 4 }, (v, i) => i + 1)`
+
 ## Function
 
 ### 闭包

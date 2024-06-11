@@ -11,5 +11,3 @@ tags:
 ---
 
 # Spring Boot
-
- 

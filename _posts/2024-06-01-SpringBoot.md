@@ -209,8 +209,20 @@ public class UserController {
 }
 ```
 
-idea设置：
+**idea设置**：
 “项目结构”里：项目-jdk指定版本号，模块-语言级别指定版本号
 ”运行“ “修改运行设置“里：java 版本设置
 
 “设置” “java编译器” “项目字节码版本“ 设置JDK8支持
+
+**项目构成**
+
+Application：静态资源映射，拦截器
+
+DatabaseInitializer：数据库初始化
+
+web：Controller
+
+service：服务层
+
+entity：实体类

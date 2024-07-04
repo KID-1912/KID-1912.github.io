@@ -12,7 +12,7 @@ tags:
 
 # Spring Boot
 
-Spring框架主要功能包括IoC容器、AOP支持、事务支持、MVC开发以及强大的第三方集成功能等
+Spring框架主要功能包括IoC容器、AOP支持、事务支持、MVC开发以及强大的第三方集成功能等。
 
 Spring Boot是一个基于Spring的套件，它帮我们预组装了Spring的一系列组件，以便以尽可能少的代码和配置来开发基于Spring的Java应用程序。
 
@@ -23,6 +23,18 @@ Spring Boot的目标就是提供一个开箱即用的应用程序架构，我们
 创建标准的Maven目录结构如下：
 
 ![](https://raw.githubusercontent.com/KID-1912/Github-PicGo-Images/master/202406301327545.png)
+
+**项目构成**
+
+Application：静态资源映射，拦截器
+
+DatabaseInitializer：数据库初始化
+
+web：Controller
+
+service：服务层
+
+entity：实体类
 
 ### application.yml
 
@@ -130,7 +142,7 @@ public class Application {
 </project>
 ```
 
-从`spring-boot-starter-parent`继承，因为这样就可以引入Spring Boot的预置配置;
+从`spring-boot-starter-parent`继承，因为这样就可以引入Spring Boot的预置配置；
 
 引入了依赖`spring-boot-starter-web`和`spring-boot-starter-jdbc`，它们分别引入了Spring MVC相关依赖和Spring JDBC相关依赖，无需指定版本号，因为引入的`<parent>`内已经指定了，只有我们自己引入的某些第三方jar包需要指定版本号。
 
@@ -209,20 +221,104 @@ public class UserController {
 }
 ```
 
-**idea设置**：
+**IDEA JDK相关设置**：
 “项目结构”里：项目-jdk指定版本号，模块-语言级别指定版本号
 ”运行“ “修改运行设置“里：java 版本设置
 
-“设置” “java编译器” “项目字节码版本“ 设置JDK8支持
+“设置” “java编译器” “项目字节码版本“，“目标字节码版本” 都设置JDK17支持
 
-**项目构成**
+## 开发者工具
 
-Application：静态资源映射，拦截器
+Spring Boot提供了一个开发者工具，监控classpath路径上的文件。源码或配置文件发生修改，Spring Boot应用可以自动重启：
 
-DatabaseInitializer：数据库初始化
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-devtools</artifactId>
+</dependency>
+```
 
-web：Controller
+确保IDEA的”文件“—“设置”中：
 
-service：服务层
+- “编译器”—“自动编译项目”勾选
 
-entity：实体类
+- “高级设置”—“编译器”—“即使开发的应用程序当前正在运行，也允许自动make启用”勾选
+
+## 打包应用
+
+Spring Boot自带一个 `spring-boot-maven-plugin` 插件用来打包，我们只需要在`pom.xml`中加入以下配置：
+
+```xml
+<project ...>
+    ...
+    <build>
+        <finalName>awesome-app</finalName> 此项可选，用于指定文件名覆盖默认名称
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+```
+
+无需任何配置，自动定位应用程序的入口Class，执行Maven命令即可打包：
+
+```bash
+mvn clean package
+```
+
+直接运行：
+
+```bash
+$ java -jar springboot-exec-jar-1.0-SNAPSHOT.jar
+```
+
+## 瘦身应用
+
+`spring-boot-maven-plugin` 打包应用，最大的缺点就是包体积过大；
+
+如何只打包我们自己编写的代码，同时又自动把依赖包下载到某处，并自动引入到classpath中。解决方案就是使用 `spring-boot-thin-launcher`：
+
+修改 `pom.xml` 中 `<build>`-`<plugins>`-`<plugin>`，给原来的 `spring-boot-maven-plugin` 增加一个 `<dependency>` 如下：
+
+```xml
+<plugin>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-maven-plugin</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot.experimental</groupId>
+            <artifactId>spring-boot-thin-layout</artifactId>
+            <version>1.0.27.RELEASE</version>
+        </dependency>
+    </dependencies>
+</plugin>
+```
+
+运行 `mvn clean package`，最终生成的可执行 `jar`，只有79KB左右
+
+`spring-boot-thin-launcher` 插件改变了 `spring-boot-maven-plugin` 默认行为。它输出的jar包只包含我们自己代码编译后的class，一个很小的 `ThinJarWrapper`，以及解析`pom.xml` 后得到的所有依赖jar的列表。
+
+运行的时候，入口实际上是 `ThinJarWrapper`，它会先在指定目录搜索看看依赖的jar包是否都存在，如果不存在，先从Maven中央仓库下载到本地，然后，再执行我们自己编写的`main()` 入口方法。
+
+`spring-boot-thin-launcher`在启动时搜索的默认目录是用户主目录的`.m2`，我们也可以指定运行jar时下载目录，例如，将下载目录指定为当前目录：
+
+```shell
+$ java -Dthin.root=. -jar awesome-app.jar
+```
+
+上述命令通过环境变量 `thin.root` 传入当前目录，执行后发现当前目录下自动生成了一个`repository`目录，这和Maven的默认下载目录 `~/.m2/repository` 的结构是完全一样的，只是它仅包含 `awesome-app.jar` 所需的运行期依赖项。
+
+**预热**
+
+第一次在服务器上运行`awesome-app.jar`时，仍需要从Maven中央仓库下载大量的jar包；
+
+下载所有依赖项，但并运行实际运行 `main()` 方法，即 “预热”（warm up）：
+
+```shell
+java -Dthin.dryrun=true -Dthin.root=. -jar awesome-app.jar
+```
+
+如果服务器由于安全限制不允许从外网下载文件，那么可以本地预热，然后把 `awesome-app.jar` 和 `repository` 目录上传到服务器；

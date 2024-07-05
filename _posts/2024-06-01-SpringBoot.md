@@ -322,3 +322,97 @@ java -Dthin.dryrun=true -Dthin.root=. -jar awesome-app.jar
 ```
 
 如果服务器由于安全限制不允许从外网下载文件，那么可以本地预热，然后把 `awesome-app.jar` 和 `repository` 目录上传到服务器；
+
+## Profiles
+
+Spring Boot对Profiles的支持可以在`application.yml`中为每个环境进行配置。下面是一个示例配置：
+
+```yml
+spring:
+  application:
+    name: ${APP_NAME:unnamed}
+  datasource:
+    url: jdbc:hsqldb:file:testdb
+    username: sa
+    password:
+    dirver-class-name: org.hsqldb.jdbc.JDBCDriver
+    hikari:
+      auto-commit: false
+      connection-timeout: 3000
+      validation-timeout: 3000
+      max-lifetime: 60000
+      maximum-pool-size: 20
+      minimum-idle: 1
+
+pebble:
+  suffix:
+  cache: false
+
+server:
+  port: ${APP_PORT:8080}
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: test
+
+server:
+  port: 8000
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: production
+
+server:
+  port: 80
+
+pebble:
+  cache: true
+```
+
+分隔符`---`，最前面的配置是默认配置，不需要指定Profile，后面的每段配置都必须以`spring.config.activate.on-profile: xxx`开头，表示针对指定Profile覆盖。
+
+分别对应直接运行（default），`$ java -Dspring.profiles.active=test -jar springboot-profiles-1.0-SNAPSHOT.jar` ，`$ java -Dspring.profiles.active=production -jar springboot-profiles-1.0-SNAPSHOT.jar`
+
+通过Profile可以实现一套代码在不同环境启用不同的配置和功能：
+
+定义存储接口 `StorageService`：
+
+```java
+public interface StorageService {
+
+    // 根据URI打开InputStream:
+    InputStream openInputStream(String uri) throws IOException;
+
+    // 根据扩展名+InputStream保存并返回URI:
+    String store(String extName, InputStream input) throws IOException;
+}
+```
+
+本地存储可通过 `LocalStorageService` 实现：
+
+```java
+@Component
+@Profile("default")
+public class LocalStorageService implements StorageService { ...... }
+```
+
+而云端存储可通过 `CloudStorageService` 实现：
+
+```java
+@Component
+@Profile("!default")
+public class CloudStorageService implements StorageService { ...... }
+```
+
+使用：
+
+```java
+@Autowired
+StorageService storageService;
+```

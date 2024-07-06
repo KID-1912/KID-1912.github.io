@@ -416,3 +416,344 @@ public class CloudStorageService implements StorageService { ...... }
 @Autowired
 StorageService storageService;
 ```
+
+## Conditional
+
+Spring提供了条件装配 `@Conditional`，编写比较复杂的 `Condition` 来做判断。Spring Boot则为我们准备好了几个非常有用的条件：
+
+- @ConditionalOnProperty：如果有指定的配置，条件生效；
+- @ConditionalOnBean：如果有指定的Bean，条件生效；
+- @ConditionalOnMissingBean：如果没有指定的Bean，条件生效；
+- @ConditionalOnMissingClass：如果没有指定的Class，条件生效；
+- @ConditionalOnWebApplication：在Web环境中条件生效；
+- @ConditionalOnExpression：根据表达式判断条件是否生效。
+
+**`@ConditionalOnProperty`**
+
+把上一面的 `StorageService` 改写：
+
+定义配置 `storage.type=xxx`，用来判断条件，默认为 `local`：
+
+```yml
+storage:
+  type: ${STORAGE_TYPE:local}
+```
+
+设定为 `local` 时，启用 `LocalStorageService`：
+
+```java
+@Component
+@ConditionalOnProperty(value = "storage.type", havingValue = "local", matchIfMissing = true)
+public class LocalStorageService implements StorageService {
+    ...
+}
+```
+
+设定为 `aws` 时，启用 `AwsStorageService`：
+
+```java
+@Component
+@ConditionalOnProperty(value = "storage.type", havingValue = "aws")
+public class AwsStorageService implements StorageService {
+    ...
+}
+```
+
+设定为 `aliyun` 时，启用 `AliyunStorageService`：
+
+```java
+@Component
+@ConditionalOnProperty(value = "storage.type", havingValue = "aliyun")
+public class AliyunStorageService implements StorageService {
+    ...
+}
+```
+
+注意到 `LocalStorageService` 的注解 `matchIfMissing = true`：当指定配置为 `local`或者配置不存在，均启用 `LocalStorageService`。
+
+## 加载配置文件
+
+Spring中通过注解 `@Value` 加载配置文件；如定义一个最大允许上传的文件大小配置：
+
+```yml
+storage:
+  local:
+    max-size: 102400
+```
+
+```java
+@Component
+public class FileUploader {
+    @Value("${storage.local.max-size:102400}")
+    int maxSize;
+
+    ...
+}
+```
+
+为了更好地管理配置，Spring Boot允许创建一个Bean，持有一组配置，并支持自动注入：
+
+```yml
+storage:
+  local:
+    # 文件存储根目录:
+    root-dir: ${STORAGE_LOCAL_ROOT:/var/storage}
+    # 最大文件大小，默认100K:
+    max-size: ${STORAGE_LOCAL_MAX_SIZE:102400}
+    # 是否允许空文件:
+    allow-empty: false
+    # 允许的文件类型:
+    allow-types: jpg, png, gif
+```
+
+定义一个Java Bean，持有该组配置：
+
+```java
+@Configuration
+@ConfigurationProperties("storage.local") 
+public class StorageConfiguration {
+    private String rootDir;
+    private int maxSize;
+    private boolean allowEmpty;
+    private List<String> allowTypes;
+
+    // TODO: getters and setters
+}
+```
+
+`@ConfigurationProperties("storage.local")`：从配置项 `storage.local` 读取该项的所有子项配置；
+
+`@Configuration`：`StorageConfiguration` 也是一个Spring管理的Bean，可直接注入到其他Bean中；
+
+**使用**
+
+```java
+@Component
+public class StorageService {
+    final Logger logger = LoggerFactory.getLogger(getClass());
+
+    @Autowired
+    StorageConfiguration storageConfig;
+
+    @PostConstruct
+    public void init() {
+        logger.info("Load configuration: root-dir = {}", storageConfig.getRootDir());
+        logger.info("Load configuration: max-size = {}", storageConfig.getMaxSize());
+        logger.info("Load configuration: allowed-types = {}", storageConfig.getAllowTypes());
+    }
+}
+```
+
+## 禁用自动配置
+
+Spring Boot使用自动配置和默认配置，极大地减少了代码，通常只需要加上几个注解，并按照默认规则设定一下必要的配置即可。
+
+例如，配置JDBC，只需要配置一个 `spring.datasource`：
+
+```yml
+spring:
+  datasource:
+    url: jdbc:hsqldb:file:testdb
+    username: sa
+    password:
+    dirver-class-name: org.hsqldb.jdbc.JDBCDriver
+```
+
+将自动创建出`DataSource`、`JdbcTemplate`、`DataSourceTransactionManager`
+
+**禁用自动配置**
+
+如果系统有主从两个数据库，而Spring Boot的自动配置只能配一个；需要禁用自动配置改手动配置：
+
+```java
+@SpringBootApplication
+// 启动自动配置，但排除指定的自动配置:
+@EnableAutoConfiguration(exclude = DataSourceAutoConfiguration.class)
+public class Application {
+    ...
+}
+```
+
+**编写主从数据库配置**
+
+```yml
+spring:
+  datasource-master:
+    url: jdbc:hsqldb:file:testdb
+    username: sa
+    password:
+    dirver-class-name: org.hsqldb.jdbc.JDBCDriver
+  datasource-slave:
+    url: jdbc:hsqldb:file:testdb
+    username: sa
+    password:
+    dirver-class-name: org.hsqldb.jdbc.JDBCDriver
+```
+
+**创建主从DataSource**
+
+```java
+public class MasterDataSourceConfiguration {
+    @Bean("masterDataSourceProperties")
+    @ConfigurationProperties("spring.datasource-master")
+    DataSourceProperties dataSourceProperties() {
+        return new DataSourceProperties();
+    }
+
+    @Bean("masterDataSource")
+    DataSource dataSource(@Autowired @Qualifier("masterDataSourceProperties") DataSourceProperties props) {
+        return props.initializeDataSourceBuilder().build();
+    }
+}
+```
+
+```java
+public class SlaveDataSourceConfiguration {
+    @Bean("slaveDataSourceProperties")
+    @ConfigurationProperties("spring.datasource-slave")
+    DataSourceProperties dataSourceProperties() {
+        return new DataSourceProperties();
+    }
+
+    @Bean("slaveDataSource")
+    DataSource dataSource(@Autowired @Qualifier("slaveDataSourceProperties") DataSourceProperties props) {
+        return props.initializeDataSourceBuilder().build();
+    }
+
+}
+```
+
+**`@Import` 导入**
+
+```java
+@SpringBootApplication
+@EnableAutoConfiguration(exclude = DataSourceAutoConfiguration.class)
+@Import({ MasterDataSourceConfiguration.class, SlaveDataSourceConfiguration.class})
+public class Application {
+    ...
+}
+```
+
+**@AbstractRoutingDataSource**
+
+`@Primary` 标注`DataSource`，它采用Spring提供的 `AbstractRoutingDataSource`，代码实现如下：
+
+```java
+class RoutingDataSource extends AbstractRoutingDataSource {
+    @Override
+    protected Object determineCurrentLookupKey() {
+        // 从ThreadLocal中取出key:
+        return RoutingDataSourceContext.getDataSourceRoutingKey();
+    }
+}
+```
+
+`RoutingDataSource` 本身并不是真正的 `DataSource`，它通过Map关联一组 `DataSource`
+
+下面的代码创建了包含两个 `DataSource` 的 `RoutingDataSource`，关联的key分别为`masterDataSource` 和 `slaveDataSource`：
+
+```java
+public class RoutingDataSourceConfiguration {
+    @Primary
+    @Bean
+    DataSource dataSource(
+            @Autowired @Qualifier("masterDataSource") DataSource masterDataSource,
+            @Autowired @Qualifier("slaveDataSource") DataSource slaveDataSource) {
+        var ds = new RoutingDataSource();
+        // 关联两个DataSource:
+        ds.setTargetDataSources(Map.of(
+                "masterDataSource", masterDataSource,
+                "slaveDataSource", slaveDataSource));
+        // 默认使用masterDataSource:
+        ds.setDefaultTargetDataSource(masterDataSource);
+        return ds;
+    }
+
+    @Bean
+    JdbcTemplate jdbcTemplate(@Autowired DataSource dataSource) {
+        return new JdbcTemplate(dataSource);
+    }
+
+    @Bean
+    DataSourceTransactionManager dataSourceTransactionManager(@Autowired DataSource dataSource) {
+        return new DataSourceTransactionManager(dataSource);
+    }
+}
+```
+
+通过注解配合AOP实现自动切换：
+
+```java
+@Controller
+public class UserController {
+    @RoutingWithSlave // <-- 指示在此方法中使用slave数据库
+    @GetMapping("/profile")
+    public ModelAndView profile(HttpSession session) {
+        ...
+    }
+}
+```
+
+实现上述功能需要编写一个`@RoutingWithSlave`注解，一个AOP织入和一个`ThreadLocal`来保存key：
+
+```java
+@Aspect
+@Component
+public class RoutingAspect {
+    @Around("@annotation(routingWithSlave)")
+    public Object routingWithDataSource(ProceedingJoinPoint joinPoint, RoutingWithSlave routingWithSlave)
+            throws Throwable {
+        try (RoutingDataSourceContext ctx = new RoutingDataSourceContext(RoutingDataSourceContext.SLAVE_DATASOURCE)) {
+            return joinPoint.proceed();
+        }
+    }
+}
+```
+
+## Filter
+
+Spring Boot中，可以做到零配置添加 `Filter` ：
+
+Spring Boot会自动扫描所有的`FilterRegistrationBean`类型的Bean，然后，将它们返回的`Filter`自动注册到Servlet容器中，无需任何配置。
+
+如实现 `AuthFilter`，首先编写一个`AuthFilterRegistrationBean`，它继承自`FilterRegistrationBean`：
+
+```java
+@Component
+public class AuthFilterRegistrationBean extends FilterRegistrationBean<Filter> {
+    @Autowired
+    UserService userService;
+
+    @Override
+    public Filter getFilter() {
+        setOrder(10);
+        return new AuthFilter();
+    }
+
+    class AuthFilter implements Filter {
+        ...
+    }
+}
+```
+
+`FilterRegistrationBean` 本身不是 `Filter`，实际上是 `Filter` 的工厂。Spring Boot会调用 `getFilter()`，把返回的 `Filter` 注册到Servlet容器中。
+
+**匹配URL**
+
+```java
+@Component
+public class ApiFilterRegistrationBean extends FilterRegistrationBean<Filter> {
+    @PostConstruct
+    public void init() {
+        setOrder(20);
+        setFilter(new ApiFilter());
+        setUrlPatterns(List.of("/api/*"));
+    }
+
+    class ApiFilter implements Filter {
+        ...
+    }
+}
+```
+
+在`@PostConstruct`方法中，通过`setFilter()`设置一个`Filter`实例后，再调用`setUrlPatterns()`传入要过滤的URL列表。

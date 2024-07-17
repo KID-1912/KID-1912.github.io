@@ -559,7 +559,7 @@ spring:
     dirver-class-name: org.hsqldb.jdbc.JDBCDriver
 ```
 
-将自动创建出`DataSource`、`JdbcTemplate`、`DataSourceTransactionManager`
+将自动创建出 `DataSource`、`JdbcTemplate`、`DataSourceTransactionManager`
 
 **禁用自动配置**
 
@@ -756,4 +756,4 @@ public class ApiFilterRegistrationBean extends FilterRegistrationBean<Filter> {
 }
 ```
 
-在`@PostConstruct`方法中，通过`setFilter()`设置一个`Filter`实例后，再调用`setUrlPatterns()`传入要过滤的URL列表。
+在 `@PostConstruct` 方法中，通过 `setFilter()` 设置一个 `Filter` 实例后，再调用 `setUrlPatterns()` 传入要过滤的URL列表。

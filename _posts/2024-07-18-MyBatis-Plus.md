@@ -92,22 +92,67 @@ public class User {
 项目根目录下新建 config 包，并创建 MybatisPlusConfig 配置类：  
 
 ```java
-// config.MyBatisPlusConfig
+// config/MyBatisPlusConfig.java
 @Configuration  
 @MapperScan("com.huaer.resource.admin")  
 public class MyBatisPlusConfig {
-}  
+}
 ```
 
 项目根目录下新建 mapper 包，添加 Mapper 类  
 
 ```java
-// mapper/UserMapper
+// mapper/UserMapper.java
 public interface UserMapper extends BaseMapper<User> {
 }
 ```
 
+**Mapper使用**
+
+```java
+// service/UserService.java
+@Autowired
+private UserMapper userMapper;
+
+@Override
+public User register(String username, String password){
+  User user = new User();
+  user.setUsername(username);
+  user.setPassword(password);
+  user.setCreatedAt(System.currentTimeMillis());
+  userMapper.insert(user);
+  Long id = user.getId();
+  System.out.println("id:" + id);
+  return user;
+}
+```
+
 ## Service层
+
+改写 `UserService.java` 为接口，使用 Mybatis Plus 封装的通用 Service 层 `IService`；
+
+```java
+public interface UserService extends IService<User> {
+    User register(String username, String password);
+}
+```
+
+新增 `UserServiceImpl.java` 继承于 ServiceImpl，实现 UserService
+
+```java
+@Service
+public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
+    @Override
+    public User register(String username, String password) {
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(password);
+        user.serCreatedAt(System.currentTimeMills());
+        this.save(user);
+        return user;
+    }
+}
+```
 
 ## 新增数据
 

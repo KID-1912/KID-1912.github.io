@@ -125,9 +125,21 @@ public interface AuthenticationManager {
 </dependency>
 
 <dependency>
-  <groupId>io.jsonwebtoken</groupId>
-  <artifactId>jjwt</artifactId>
-  <version>0.9.0</version>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-api</artifactId>
+    <version>0.11.5</version>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-impl</artifactId>
+    <version>0.11.5</version>
+    <scope>runtime</scope>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-jackson</artifactId>
+    <version>0.11.5</version>
+    <scope>runtime</scope>
 </dependency>
 
 <dependency>
@@ -162,7 +174,7 @@ public class SpringSecurityConfig {
     // public UserDetailsService userDetailsService() {
     //    return new CustomUserDetailsService();
     // }
-    
+
     // 未登录异常处理
     // 权限不足异常处理
     // 自定义jwt过滤器
@@ -227,7 +239,8 @@ public PasswordEncoder passwordEncoder() {
 ```java
 @Bean
 public AuthenticationManager authenticationManager() throws Exception {
-    return super.authenticationManager();
+    AuthenticationConfiguration authenticationConfiguration = authenticationConfiguration();
+    return authenticationConfiguration.getAuthenticationManager();
 }
 ```
 

@@ -286,7 +286,7 @@ Spring Security在用户认证过程中会使用它来获取用户信息，并�
 
 其中 **UserDetails** 也是一个定义了数据形式的接口，用于保存我们从数据库中查出来的数据，其功能主要是验证账号状态和获取权限。见 `entity/UserDetail.java` 对其实现；
 
-**TokenUtil**
+### JwtProvider
 
 采用JWT认证模式，需要一个帮我们操作Token的工具类，它至少具有以下三个方法：  
 
@@ -331,8 +331,59 @@ public class JwtProperties {
 }
 ```
 
+**AccessToken**
+
+```java
+// bo/AccessToken.java
+@Data
+@Builder
+public class AccessToken {
+    private String loginAccount;
+    private String token;
+    private Date expirationTime;
+}
+```
+
 **JwtProvider**
 
+```java
+// provider/JwtProvider.java
+@Component
+public class JwtProvider {
+    // 请求中获取token
+    public String getToken(HttpServletRequest request) 
+    // 根据用户信息生成token
+    public AccessToken createToken(UserDetails userDetails) 
+    // 生成token
+    // 参数是放入token中的字符串
+    public AccessToken createToken(String subject) 
+    // 验证token是否有效
+    // 反解析token中的信息，与参数中的信息比较，再校验过期时间
+    public boolean validateToken(String token, UserDetails userDetails) 
+    // 从token解析出负载信息
+    // 生成token
+    // 参数是放入token中的字符串
+    public AccessToken createToken(String subject) {
+        // 当前时间
+        final Date now = new Date();
+        // 过期时间
+        final Date expirationDate = new Date(now.getTime() + jwtProperties.getExpirationTime() * 1000);
 
+        // jjwt 
+        // 生成密钥 SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+        SecretKey key = Keys.hmacShaKeyFor(jwtProperties.getApiSecretKey().getBytes(StandardCharsets.UTF_8));
+        String token = jwtProperties.getTokenPrefix() + Jwts.builder()
+                .setSubject(subject)
+                .setIssuedAt(now)
+                .setExpiration(expirationDate)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+        return AccessToken.builder().loginAccount(subject).token(token).expirationTime(expirationDate).build();
+    }
+    ......
+}
+```
 
 ## 具体实现
+
+### 认证方法

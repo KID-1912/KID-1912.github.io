@@ -253,8 +253,8 @@ public AuthenticationManager authenticationManager() throws Exception {
 public class CustomUserDetailsService implements UserDetailsService {
     @Autowired
     private UserService userService;
-    @Autowired
-    private RoleInfoService roleInfoService;
+    // @Autowired
+    // private RoleInfoService roleInfoService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -271,8 +271,8 @@ public class CustomUserDetailsService implements UserDetailsService {
         // 构建 UserDetail 对象
         UserDetail userDetail = new UserDetail();
         userDetail.setUserInfo(userInfo);
-        List<RoleInfo> roleInfoList = roleInfoService.listRoleByUserId(userInfo.getUserId());
-        userDetail.setRoleInfoList(roleInfoList);
+        // List<RoleInfo> roleInfoList = roleInfoService.listRoleByUserId(userInfo.getUserId());
+        // userDetail.setRoleInfoList(roleInfoList);
         return userDetail;
     }
 }
@@ -282,6 +282,10 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 Spring Security在用户认证过程中会使用它来获取用户信息，并基于这些信息执行身份验证。
 
+**UserDetail**
+
+其中 **UserDetails** 也是一个定义了数据形式的接口，用于保存我们从数据库中查出来的数据，其功能主要是验证账号状态和获取权限。见 `entity/UserDetail.java` 对其实现；
+
 **TokenUtil**
 
 采用JWT认证模式，需要一个帮我们操作Token的工具类，它至少具有以下三个方法：  
@@ -289,5 +293,46 @@ Spring Security在用户认证过程中会使用它来获取用户信息，并�
 - 创建token
 - 验证token
 - 反解析token中的信息
+
+**JwtProperties**
+
+定义配置类JwtProperties，从 `application.yml` 读取jwt配置
+
+```java
+// properties/JwtProperties.java
+@Data
+@Component
+@ConfigurationProperties(prefix = "jwt")
+public class JwtProperties {
+
+    /**
+     * 密钥
+     */
+    @Value("${jwt.apiSecretKey:JWT_SECRET_KEY}")
+    private String apiSecretKey;
+
+    /**
+     * 过期时间-默认半个小时
+     */
+    @Value("${jwt.expirationTime:1800}")
+    private Long expirationTime;
+
+    /**
+     * 默认存放token的请求头
+     */
+    @Value("${jwt.requestHeader:Authorization}")
+    private String requestHeader;
+
+    /**
+     * 默认token前缀
+     */
+    @Value("${jwt.tokenPrefix:Bearer}")
+    private String tokenPrefix;
+}
+```
+
+**JwtProvider**
+
+
 
 ## 具体实现

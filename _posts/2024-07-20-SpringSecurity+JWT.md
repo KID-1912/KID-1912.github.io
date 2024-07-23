@@ -24,10 +24,10 @@ Spring Security 的web基础是Filters，即通过一层层的Filters来对web�
 
 ## 基础概念（组件）
 
-- **SecurityContext**：上下文对象，`Authentication`对象会放在里面。
+- **SecurityContext**：上下文对象，`Authentication` 对象会放在里面。
 - **SecurityContextHolder**：用于拿到上下文对象的静态工具类。
 - **Authentication**：认证接口，定义了认证对象的数据形式。
-- **AuthenticationManager**：用于校验`Authentication`，返回一个认证完成后的`Authentication`对象。
+- **AuthenticationManager**：用于校验 `Authentication`，返回一个认证完成后的`Authentication` 对象。
 
 ### SecurityContext
 
@@ -95,8 +95,7 @@ public interface Authentication extends Principal, Serializable {
 ```java
 public interface AuthenticationManager {
  // 认证方法
- Authentication authenticate(Authentication authentication)
-   throws AuthenticationException;
+ Authentication authenticate(Authentication authentication) throws AuthenticationException;
 }
 ```
 
@@ -108,11 +107,11 @@ public interface AuthenticationManager {
 
 1. 先是一个请求带着身份信息进来 
 
-2. 经过`AuthenticationManager`的认证
+2. 经过 `AuthenticationManager` 的认证
 
-3. 再通过`SecurityContextHolder`获取`SecurityContext`
+3. 再通过 `SecurityContextHolder` 获取 `SecurityContext`
 
-4. 最后将认证后的信息放入到`SecurityContext`
+4. 最后将认证后的信息放入到 `SecurityContext`
 
 ## 准备工作
 
@@ -181,8 +180,9 @@ public class SpringSecurityConfig {
 
     // 使用自带的 authenticationManager 代办认证操作
     @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-      // ......
+    public AuthenticationManager authenticationManager() throws Exception {
+        AuthenticationConfiguration authenticationConfiguration = authenticationConfiguration();
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
     // 访问控制的投票器，决定是否允许访问某个资源
@@ -196,7 +196,7 @@ public class SpringSecurityConfig {
 
 ### 定义组件
 
-**定义加密器Bean**
+#### 加密器Bean
 
 ```java
 // config/SpringSecurityConfig.java
@@ -234,7 +234,7 @@ public PasswordEncoder passwordEncoder() {
 }
 ```
 
-**定义AuthenticationManager**
+#### AuthenticationManager
 
 ```java
 @Bean
@@ -246,7 +246,7 @@ public AuthenticationManager authenticationManager() throws Exception {
 
 这里将 `Spring Security` 自带的 `authenticationManager` 声明成Bean，作用是用它帮我们进行认证操作，调用这个Bean的`authenticate`方法会由 `Spring Security` 自动帮我们做认证。也支持修改逻辑实现自定以认证操作；
 
-### 实现UserDetailsService
+#### UserDetailsService
 
 ```java
 // service/impl/CustomUserDetailsService.java
@@ -280,13 +280,13 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 实现 `UserDetailsService` 的抽象方法并返回一个 **UserDetails** 对象，逻辑完全自定义但必须将将用户信息和权限信息组装成一个 **UserDetails** 返回。(若项目无权限设计，可忽略roleInfo部分）
 
-Spring Security在用户认证过程中会使用它来获取用户信息，并基于这些信息执行身份验证。
+Spring Security在用户认证过程中（authenticate）会使用它来获取用户信息，并基于这些信息执行身份验证。
 
 **UserDetail**
 
 其中 **UserDetails** 也是一个定义了数据形式的接口，用于保存我们从数据库中查出来的数据，其功能主要是验证账号状态和获取权限。见 `entity/UserDetail.java` 对其实现；
 
-### JwtProvider
+#### JwtProvider
 
 采用JWT认证模式，需要一个帮我们操作Token的工具类，它至少具有以下三个方法：  
 
@@ -387,3 +387,55 @@ public class JwtProvider {
 ## 具体实现
 
 ### 认证方法
+
+```java
+// service/impl/UserServiceImpl.java
+private AuthenticationManager authenticationManager;
+
+@Autowired
+public void setAuthenticationManager(@Lazy AuthenticationManager authenticationManager) {
+    this.authenticationManager = authenticationManager;
+}
+
+@Autowired
+JwtProvider jwtProvider;
+
+public String signin(String username, String password) {
+    // 认证方法
+    // 1. 创建usernameAuthenticationToken
+    UsernamePasswordAuthenticationToken usernamePasswordAuthentication = new UsernamePasswordAuthenticationToken(username, password);
+    // 2. 认证
+    Authentication authentication;
+    try {
+        authentication = this.authenticationManager.authenticate(usernamePasswordAuthentication);
+    }catch(BadCredentialsException e ){
+        throw new ServiceException(StatusEnum.LOGIN_ERROR);
+    }
+    // 3. 保存认证信息
+    SecurityContextHolder.getContext().setAuthentication(authentication);
+    // 4. 生成自定义token
+    AccessToken accessToken = jwtProvider.createToken((UserDetails) authentication.getPrincipal());
+    // 5. 放入缓存
+    // UserDetail userDetail = (UserDetail) authentication.getPrincipal();
+    // caffeineCache.put(CacheName.USER, userDetail.getUsername(), userDetail);
+    return accessToken.getToken();
+}
+```
+
+- 传入用户名和密码创建了一个`UsernamePasswordAuthenticationToken`对象，这是我们前面说过的`Authentication`的实现类，传入用户名和密码做构造参数，这个对象就是我们创建出来的未认证的`Authentication`对象。
+- 使用我们先前已经声明过的Bean-`authenticationManager`调用它的`authenticate`方法进行认证，返回一个认证完成的`Authentication`对象。
+- 认证完成没有出现异常，就会走到第三步，使用`SecurityContextHolder`获取`SecurityContext`之后，将认证完成之后的`Authentication`对象，放入上下文对象。
+- 从`Authentication`对象中拿到我们的`UserDetails`对象，之前我们说过，认证后的`Authentication`对象调用它的`getPrincipal()`方法就可以拿到我们先前数据库查询后组装出来的`UserDetails`对象，然后创建token。
+- 把`UserDetails`对象放入缓存中，方便后面过滤器使用。
+
+主要认证操作都会由 `authenticationManager.authenticate()` 帮助完成
+
+通过 `AbstractUserDetailsAuthenticationProvider` 下 `authenticate` 源代码，了解Spring Security的操作包括：
+
+**loadUserByUsername**
+
+调用我们重写UserDetailsService的loadUserByUsername方法，根据用户名验证用户存在，并拿到我们自己组装好的UserDetails对象；
+
+**additionalAuthenticationChecks**
+
+通过对UserDetails和authentication实现密码一致对比

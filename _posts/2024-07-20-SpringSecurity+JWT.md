@@ -163,20 +163,36 @@ public class SpringSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception
 
+    // 加密器
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new MD5PasswordEncoder();
+    } 
+
     // 获取用户信息处理
     @Bean
     public UserDetailsService userDetailsService() {
-      return new UserDetailsService(){ ...内部实现 }
+        return new CustomerUserDetailsService();
+    }
+
+    private static class CustomerUserDetailsService implements UserDetailsService {
+      // UserDetailsService.loadUserByUsername实现
     }
     // 或者独立内部实现到 service/impl/CustomUserDetailsService.java
-    // @Bean
-    // public UserDetailsService userDetailsService() {
-    //    return new CustomUserDetailsService();
-    // }
 
     // 未登录异常处理
     // 权限不足异常处理
-    // 自定义jwt过滤器
+
+    // jwt过滤器
+    @Bean
+    public JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter(){
+      return new JwtAuthenticationTokenFilter();
+    }
+
+    @Bean
+    public AuthenticationConfiguration authenticationConfiguration() {
+        return new AuthenticationConfiguration();
+    }
 
     // 使用自带的 authenticationManager 代办认证操作
     @Bean
@@ -238,13 +254,18 @@ public PasswordEncoder passwordEncoder() {
 
 ```java
 @Bean
+public AuthenticationConfiguration authenticationConfiguration() {
+    return new AuthenticationConfiguration();
+}
+
+@Bean
 public AuthenticationManager authenticationManager() throws Exception {
     AuthenticationConfiguration authenticationConfiguration = authenticationConfiguration();
     return authenticationConfiguration.getAuthenticationManager();
 }
 ```
 
-这里将 `Spring Security` 自带的 `authenticationManager` 声明成Bean，作用是用它帮我们进行认证操作，调用这个Bean的`authenticate`方法会由 `Spring Security` 自动帮我们做认证。也支持修改逻辑实现自定以认证操作；
+这里将 `Spring Security` 自带的 `authenticationManager` 声明成Bean，作用是用它帮我们进行认证操作，调用这个Bean的 `authenticate` 方法会由 `Spring Security` 自动帮我们做认证。也支持修改逻辑实现自定以认证操作；
 
 #### UserDetailsService
 
@@ -261,16 +282,16 @@ public class CustomUserDetailsService implements UserDetailsService {
         log.debug("开始登陆验证，用户名为: {}", username);
 
         // 根据用户名验证用户
-        QueryWrapper<UserInfo> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(UserInfo::getLoginAccount, username);
-        UserInfo userInfo = userService.getOne(queryWrapper);
-        if (userInfo == null) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(User::getLoginAccount, username);
+        User user = userService.getOne(queryWrapper);
+        if (user == null) {
             throw new UsernameNotFoundException("用户名不存在，登陆失败。");
         }
 
         // 构建 UserDetail 对象
         UserDetail userDetail = new UserDetail();
-        userDetail.setUserInfo(userInfo);
+        userDetail.setUser(user);
         // List<RoleInfo> roleInfoList = roleInfoService.listRoleByUserId(userInfo.getUserId());
         // userDetail.setRoleInfoList(roleInfoList);
         return userDetail;
@@ -439,3 +460,30 @@ public String signin(String username, String password) {
 **additionalAuthenticationChecks**
 
 通过对UserDetails和authentication实现密码一致对比
+
+### JWT过滤器
+
+`config/SpringSecurityConfig` 配置 jwt过滤器，并添加到 SecurityFilterChain上
+
+```java
+// config/SpringSecurityConfig.java
+// 自定义的jwt过滤器
+@Bean
+public JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter() {
+    return new JwtAuthenticationTokenFilter();
+}
+```
+
+```java
+// config/SpringSecurityConfig.java
+http
+    .authorizeHttpRequests(authorizeRequests -> authorizeRequests)
+    .addFilterBefore(jwtAuthenticationTokenFilter(), UsernamePasswordAuthenticationFilter.class)
+```
+
+**JwtAuthenticationTokenFilter**
+
+```java
+// component/JwtAuthenticationTokenFilter.java
+
+```

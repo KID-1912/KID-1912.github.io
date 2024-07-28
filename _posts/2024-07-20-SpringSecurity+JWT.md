@@ -180,7 +180,8 @@ public class SpringSecurityConfig {
     }
     // 或者独立内部实现到 service/impl/CustomUserDetailsService.java
 
-    // 未登录异常处理
+    // 认证（未登录）异常处理
+
     // 权限不足异常处理
 
     // jwt过滤器
@@ -476,9 +477,13 @@ public JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter() {
 
 ```java
 // config/SpringSecurityConfig.java
-http
-    .authorizeHttpRequests(authorizeRequests -> authorizeRequests)
-    .addFilterBefore(jwtAuthenticationTokenFilter(), UsernamePasswordAuthenticationFilter.class)
+@Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+        .authorizeHttpRequests(authorizeRequests -> authorizeRequests)
+        .addFilterBefore(jwtAuthenticationTokenFilter(), UsernamePasswordAuthenticationFilter.class)
+    // ......
+}
 ```
 
 **JwtAuthenticationTokenFilter**
@@ -486,4 +491,172 @@ http
 ```java
 // component/JwtAuthenticationTokenFilter.java
 
+public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
+    @Autowired
+    private JwtProvider jwtProvider;
+
+    @Autowired
+    private JwtProperties jwtProperties;
+
+    @Autowired
+    UserService userService;
+
+    @Override
+    protected void doFilterInternal(@NotNull HttpServletRequest request,
+                                    @NotNull HttpServletResponse response,
+                                    @NotNull FilterChain chain) throws ServletException, IOException {
+        String authToken = jwtProvider.getToken(request);
+        if(authToken != null && !authToken.isEmpty() && authToken.startsWith(jwtProperties.getTokenPrefix())){
+            authToken = authToken.substring(jwtProperties.getTokenPrefix().length());
+            String loginAccount = jwtProvider.getSubjectFromToken(authToken); // 解析Token，若token过期或无效，将返回null
+            // loginAccount存在且无authentication验证信息
+            if(loginAccount != null && !loginAccount.isEmpty() && SecurityContextHolder.getContext().getAuthentication() == null) {
+                // 查询缓存中用户userDetail
+                // UserDetail userDetail = caffeineCache.get(CacheName.USER, loginAccount, UserDetail.class);
+                // 由于目前未支持缓存，改查询数据库
+                QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+                queryWrapper.eq("username", loginAccount);
+                User user = userService.getOne(queryWrapper);
+                if (user != null) {
+                    UserDetail userDetails = new UserDetail();
+                    userDetails.setUser(user);
+                    // 创建已认证UsernamePasswordAuthenticationToken
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(authentication); // 供后续Filter使用
+                }
+            }
+        }
+        chain.doFilter(request, response);
+    }
+}
+```
+
+## 验证/鉴权失败处理
+
+默认未认证的Authentication或者无权限接口（包括不存在的接口转到/error）都会被SpringSecurity空响应且 403 Forbidden Status；支持自定义处理：
+
+**验证失败处理**
+
+```java
+public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Override
+    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authenticationException)
+    throws IOException, ServletException
+    {
+        response.setHeader("Cache-Control", "no-cache");
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json");
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.getWriter().write(objectMapper.writeValueAsString(ResultResponse.error(StatusEnum.UNAUTHORIZED)));
+        response.getWriter().flush();
+    }
+}
+```
+
+**权限不足处理**
+
+注：目前暂未添加权限逻辑，此处仅展示错误处理逻辑
+
+```java
+// component/RestfulAccessDeniedHandler
+public class RestfulAccessDeniedHandler implements AccessDeniedHandler {
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Override
+    public void handle(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            AccessDeniedException e) throws IOException, ServletException {
+        response.setHeader("Cache-Control", "no-cache");
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json");
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.getWriter().write(objectMapper.writeValueAsString(ResultResponse.error(StatusEnum.FORBIDDEN)));
+        response.getWriter().flush();
+    }
+}
+```
+
+**SpringSecurityConfig配置错误处理**
+
+```java
+// config/SpringSecurityConfig.java
+@Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+            .authorizeHttpRequests(authorizeRequests ->
+                    authorizeRequests
+                            // ......
+                            // 新增：放行 SpringMVC "/error"
+                            .requestMatchers("/error").permitAll()
+                            // 放行登录/注册方法
+                            .requestMatchers("/signin", "/register").permitAll()
+                            // 除上面的其他所有请求全部需要鉴权认证
+                            .anyRequest().authenticated()
+            )
+            // 新增：配置自定义错误处理
+            .exceptionHandling()
+            .authenticationEntryPoint(restAuthenticationEntryPoint())
+            .accessDeniedHandler(restfulAccessDeniedHandler())
+            .and()
+            .addFilterBefore(jwtAuthenticationTokenFilter(), UsernamePasswordAuthenticationFilter.class)
+```
+
+**注入异常处理**
+
+```java
+// config/SpringSecurityConfig.java
+    // 未登录异常处理
+    @Bean
+    public RestAuthenticationEntryPoint restAuthenticationEntryPoint(){
+        return new RestAuthenticationEntryPoint();
+    }
+
+    // 权限不足异常处理
+    @Bean
+    public RestfulAccessDeniedHandler restfulAccessDeniedHandler(){
+        return new RestfulAccessDeniedHandler();
+    }
+```
+
+## 退出登录
+
+```java
+// 退出登录
+@Override
+public void logout() {
+    // caffeineCache.remove(CacheName.USER, AuthProvider.getLoginAccount());
+    SecurityContextHolder.clearContext();
+}
+```
+
+## Token刷新
+
+```java
+// provider/JwtProvider.java
+
+    // ......
+
+        // 刷新token
+    // 过滤器会对请求进行验证，此处不用验证
+    public AccessToken refreshToken(String oldToken) {
+        String token = oldToken.substring(jwtProperties.getTokenPrefix().length());
+        Claims claims = getClaimsFromToken(token);
+        // 旧token签发时间30分钟内，返回原token
+        System.out.println(tokenRefreshJustBefore(claims));
+        if (tokenRefreshJustBefore(claims)) {
+            return AccessToken.builder().loginAccount(claims.getSubject()).token(oldToken).expirationTime(claims.getExpiration()).build();
+        }else{
+            return createToken(claims.getSubject());
+        }
+    }
+
+    // 判断token在30分钟内签发的
+    private boolean tokenRefreshJustBefore(Claims claims){
+        Date nowDate = new Date();
+        Date tokenCreateDate = new Date(claims.getExpiration().getTime() - jwtProperties.getExpirationTime() * 1000);
+        // 当前时间在token创建时间30分钟范围内
+        return nowDate.after(tokenCreateDate) && nowDate.before(new Date(tokenCreateDate.getTime() + 3 * 60 * 1000));
+    }
 ```

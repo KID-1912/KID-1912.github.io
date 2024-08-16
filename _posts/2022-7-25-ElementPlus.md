@@ -26,13 +26,13 @@ tags:
 
 - 手动导入
 
-详见[官方文档](https://element-plus.gitee.io)
+详见 [官方文档](https://element-plus.org/zh-CN/)
 
 ## 主题
 
 **SCSS 变量**
 
-新建 `src/plugins/element-plus/var.scss`，编写scss变量覆盖；[详见文档](https://element-plus.gitee.io/zh-CN/guide/theming.html)
+新建 `src/plugins/element-plus/var.scss`，编写scss变量覆盖；详见 [主题 ](https://element-plus.org/zh-CN/guide/theming.html)
 
 **CSS变量**
 

@@ -152,6 +152,36 @@ vite详见  [element-plus-best-practices](https://github.com/sxzz/element-plus-b
 
 自动导入插件 [unplugin-icons](https://github.com/antfu/unplugin-icons)
 
+### Layouts
+
+```html
+<script setup>
+import AppHeader from "./header/header.vue";
+import AppSidebar from "./sidebar/sidebar.vue";
+</script>
+
+<template>
+  <div class="h-100vh flex flex-col">
+    <AppHeader></AppHeader>
+    <el-container class="layout-container">
+      <AppSidebar></AppSidebar>
+      <el-main>
+        <slot></slot>
+      </el-main>
+    </el-container>
+  </div>
+</template>
+
+<style lang="scss" scoped>
+.layout-container {
+  height: 0;
+  .el-main {
+    padding: 0;
+  }
+}
+</style>
+```
+
 ## 分页
 
 推荐使用 `@update:current-page` 替代 `@current-page`

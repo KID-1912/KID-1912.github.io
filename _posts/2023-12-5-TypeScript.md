@@ -12,6 +12,8 @@ tags:
 
 # TypeScript
 
+[官方文档]([https://www.typescriptlang.org/](https://www.typescriptlang.org/))
+
 ## 安装
 
 `typescript` 编译器
@@ -495,6 +497,9 @@ Ts编译主要负责语法降级和类型定义的生成，编译配置类别包
     "target": "ES5" // ES5、ES6
     "outDir": "dist"  // 输出目录
     "types": ["node", react"],  // 仅加载 @types/node、@types/react 类型包
+    "allowImportingTsExtensions": , // 允许导入.ts和.tsx文件
+    "jsx": "react-jsx",  // 指定TS如何处理jsx语法
+    "noEmit": true,  // 仅进行类型检查和编译，不生成.js与.d.ts文件
   }
 }
 ```

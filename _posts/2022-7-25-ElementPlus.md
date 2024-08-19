@@ -34,6 +34,46 @@ tags:
 
 新建 `src/plugins/element-plus/var.scss`，编写scss变量覆盖；详见 [主题 ](https://element-plus.org/zh-CN/guide/theming.html)
 
+```scss
+// https://github.com/element-plus/element-plus/blob/dev/packages/theme-chalk/src/common/var.scss
+
+@forward "element-plus/theme-chalk/src/common/var.scss" with (
+  $colors: (
+    "primary": (),
+  ),
+  $text-color: (
+    "regular": #333333,
+  )
+);
+
+@use "element-plus/theme-chalk/src/index.scss" as *;
+
+.el-dialog {
+  --el-dialog-border-radius: var(--el-border-radius-base);
+}
+
+.el-dialog__headerbtn {
+  font-size: var(--el-message-close-size, 20px);
+}
+
+.el-dialog__footer {
+  text-align: initial;
+}
+```
+
+注：如果项目使用了 `unplugin/vue-components` 自动导入，那么样式覆盖可能被自动导入组件的样式文件覆盖，此时关闭自动导入组件样式：
+
+```js
+Components({
+        resolvers: [
+          ElementPlusResolver({ importStyle: false }), 
+          // ......
+        ]
+})
+```
+
+
+
 **CSS变量**
 
 为元素类声明 css 变量覆盖基础值，适用于单独为某个组件实例定义样式；

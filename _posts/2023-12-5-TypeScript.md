@@ -12,7 +12,7 @@ tags:
 
 # TypeScript
 
-[官方文档]([https://www.typescriptlang.org/](https://www.typescriptlang.org/))
+[官方文档](https://www.typescriptlang.org/)
 
 ## 安装
 
@@ -500,6 +500,8 @@ Ts编译主要负责语法降级和类型定义的生成，编译配置类别包
     "allowImportingTsExtensions": , // 允许导入.ts和.tsx文件
     "jsx": "react-jsx",  // 指定TS如何处理jsx语法
     "noEmit": true,  // 仅进行类型检查和编译，不生成.js与.d.ts文件
+    "esModuleInterop": true, // 允许import非ES模块，启用ES模块互操作性支持
+    "allowSyntheticDefaultImports": true, // 允许使用默认导入语法，即使模块实际没有默认导出
   }
 }
 ```

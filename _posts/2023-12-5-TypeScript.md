@@ -492,9 +492,11 @@ Ts编译主要负责语法降级和类型定义的生成，编译配置类别包
 ```json
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "lib": ["ES2015"],  // 需要外部lib对语法编译
-    "target": "ES5" // ES5、ES6
+    "module": "ESNext"/"commonjs",  // TS生成的模块代码的格式
+    "moduleResolution": "Bundler",  // 指定TS如何解析模块导入，Node/Bundler
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],  // 定义可用的全局变量和类型的库文件
+    "skipLibCheck": true,  // 跳过对所有声明文件（.d.ts 文件）的类型检查  
+    "target": "ESNext", // TS编译结果的ECMAScript版本：ES5、ES6、ESNext
     "outDir": "dist"  // 输出目录
     "types": ["node", react"],  // 仅加载 @types/node、@types/react 类型包
     // more
@@ -503,8 +505,16 @@ Ts编译主要负责语法降级和类型定义的生成，编译配置类别包
     "noEmit": true,  // 仅进行类型检查和编译，不生成.js与.d.ts文件
     "esModuleInterop": true, // 允许import非ES模块，启用ES模块互操作性支持
     "allowSyntheticDefaultImports": true, // 允许使用默认导入语法，即使模块实际没有默认导出
+    "baseUrl": ".",  //  TS编译器解析模块的基准目录，通常与paths使用
     "paths": { "@/*": ["./src/*"] }, // 声明解析别名
+    "forceConsistentCasingInFileNames": true, // 模块导入时强制文件名大小写一致性
+    "sourceMap": true,  // 是否生成源映射文件用于调试
     "plugins": [{ "name": "typescript-plugin-css-modules" }] // ts 插件
+    "useDefineForClassFields": true,
+    "allowJs": false,
+    "strict": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
   }
 }
 ```

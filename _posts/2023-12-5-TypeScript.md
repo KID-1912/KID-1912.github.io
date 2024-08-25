@@ -1,16 +1,18 @@
 ---
 layout:     post
 title:      TypeScript
-subtitle:   一套开源内容编辑和实时协作工具，基于ProseMirror
+subtitle:   在 JavaScript 的所有功能之上添加了一层： TypeScript 的类型系统。
 date:       2023-11-27
 author:     page
 header-img: img/TypeScript.png
 catalog: true
 tags:
-    - JavaScript
+    - TypeScript
 ---
 
 # TypeScript
+
+[官方文档](https://www.typescriptlang.org/)
 
 ## 安装
 
@@ -473,7 +475,7 @@ type ItemType = 'official' | 'second-hand';
 type SKU = `${Brand}-${Memory}-${ItemType}`;
 ```
 
-## TypeScript编译
+## 编译配置
 
 Ts编译主要负责语法降级和类型定义的生成，编译配置类别 `tsconfig.json` 包括产物控制、输入与输出控制、类型声明、代码检查等
 
@@ -487,14 +489,32 @@ Ts编译主要负责语法降级和类型定义的生成，编译配置类别 `t
 
 **types：** 仅加载指定类型定义包
 
-```tsconfig
+```json
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "lib": ["ES2015"],  // 需要外部lib对语法编译
-    "target": "ES5" // ES5、ES6
+    "module": "ESNext"/"commonjs",  // TS生成的模块代码的格式
+    "moduleResolution": "Bundler",  // 指定TS如何解析模块导入，Node/Bundler
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],  // 定义可用的全局变量和类型的库文件
+    "skipLibCheck": true,  // 跳过对所有声明文件（.d.ts 文件）的类型检查  
+    "target": "ESNext", // TS编译结果的ECMAScript版本：ES5、ES6、ESNext
     "outDir": "dist"  // 输出目录
     "types": ["node", react"],  // 仅加载 @types/node、@types/react 类型包
+    // more
+    "allowImportingTsExtensions": , // 允许导入.ts和.tsx文件
+    "jsx": "react-jsx",  // 指定TS如何处理jsx语法
+    "noEmit": true,  // 仅进行类型检查和编译，不生成.js与.d.ts文件
+    "esModuleInterop": true, // 允许import非ES模块，启用ES模块互操作性支持
+    "allowSyntheticDefaultImports": true, // 允许使用默认导入语法，即使模块实际没有默认导出
+    "baseUrl": ".",  //  TS编译器解析模块的基准目录，通常与paths使用
+    "paths": { "@/*": ["./src/*"] }, // 声明解析别名
+    "forceConsistentCasingInFileNames": true, // 模块导入时强制文件名大小写一致性
+    "sourceMap": true,  // 是否生成源映射文件用于调试
+    "plugins": [{ "name": "typescript-plugin-css-modules" }] // ts 插件
+    "useDefineForClassFields": true,
+    "allowJs": false,
+    "strict": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
   }
 }
 ```
@@ -508,7 +528,8 @@ Ts编译主要负责语法降级和类型定义的生成，编译配置类别 `t
 ```tsconfig
 {
   "include": [
-    "src/**/*"
+    "src/**/*",
+     "auto-imports.d.ts" // 引入全局变量，自动引入的变量
   ],
   "exclude": [
     "src/excludeDir",

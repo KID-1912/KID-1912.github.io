@@ -65,14 +65,12 @@ tags:
 
 ```js
 Components({
-        resolvers: [
-          ElementPlusResolver({ importStyle: false }), 
-          // ......
-        ]
+  resolvers: [
+    ElementPlusResolver({ importStyle: false }), 
+       // ......
+    ]
 })
 ```
-
-
 
 **CSS变量**
 

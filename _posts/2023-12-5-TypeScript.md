@@ -12,7 +12,7 @@ tags:
 
 # TypeScript
 
-[官方文档](https://www.typescriptlang.org/)
+[官方文档](https://www.typescriptlang.org/) [TypeScript 教程 - 阮一峰](https://wangdoc.com/typescript/)
 
 ## 安装
 
@@ -298,6 +298,112 @@ function fun<T>(param: T): T {
 }
 ```
 
+## 类型断言
+
+允许开发者在代码中“断言”某个值的类型。TypeScript 一旦发现存在类型断言，就不再对该值进行类型推断，而是直接采用断言给出的类型。
+
+```ts
+interface Task {
+  __type: "task";
+  id: string;
+  // .....
+  scheduledAt: Date | null;
+}
+
+const task: Task = {
+  // .....
+  scheduledAt: task.scheduledAt ? Timestamp.fromDate(task.scheduledAt as Date) : null
+}
+```
+
+```tsx
+// 断言为HTMLDivElement，不为null
+const container = document.getElementById("root") as HTMLDivElement;
+
+ReactDOM.createRoot(container).render(
+  <React.StrictMode>
+      <App />
+  </React.StrictMode>,
+);
+```
+
+**断言unknown类型**
+
+```tsx
+export type AppRouteObject = {
+  order?: number;
+  meta?: RouteMeta;
+  children?: AppRouteObject[];
+} & Omit<RouteObject, 'children'>;
+
+const routes: AppRouteObject[] = []; // 自定义的AppRouteObject类型
+const router = createHashRouter(routes as unknown as RouteObject[]);
+
+ request<T = any>(config: AxiosRequestConfig): Promise<T> {
+    return new Promise((resolve, reject) => {
+      axiosInstance
+        .request<any, AxiosResponse<Result>>(config)
+        .then((res: AxiosResponse<Result>) => {
+          resolve(res as unknown as Promise<T>);
+        })
+        .catch((e: Error | AxiosError) => {
+          reject(e);
+        });
+    });
+  }
+```
+
+**非空断言**
+
+```tsx
+const root = document.getElementById('root')!;
+
+
+const UserContext = createContext<User | null>(null);
+const userId: string = user!.uid; // 断言user不为null
+```
+
+## 模块
+
+```ts
+export interface A {
+  foo: string;
+}
+export let a = 123;
+
+import { type A, a } from './a';
+import type { A } from './a';
+import type * as TypeNS from 'moduleA';
+```
+
+## declare
+
+向TS编译器描述项目外部的类型，只声明不实现
+
+```ts
+// plugins.d.ts
+declare module "qs";
+declare module "nprogress";
+declare module "js-md5";
+declare module "react-transition-group";
+```
+
+使用declare global {}语法，为 JavaScript 引擎的原生对象添加属性和方法
+
+```ts
+// * global
+declare global {
+    interface Window {
+        __REDUX_DEVTOOLS_EXTENSION_COMPOSE__: any;
+    }
+    interface Navigator {
+        msSaveOrOpenBlob: (blob: Blob, fileName: string) => void;
+        browserLanguage: string;
+    }
+}
+export {};
+```
+
 ## 工具类型
 
 前面提到通过泛型实现工具类型，Ts内置了一些工具类型：
@@ -362,6 +468,7 @@ Omit：对传入对象类型排除部分键值类型值作为新类型返回
 ```ts
 type BasicInfo = Pick<User, 'name' | 'age'>;
 type MoreInfo = Omit<User, 'name' | 'age'>;
+interface NewTask extends Pick<Task, "__type" | "done" | "name"> {}
 ```
 
 **Exclude & Extract**
@@ -423,7 +530,7 @@ type Result = Awaited<ReturnType<typeof getPromise>>; // string 类型
 
 ## 类型声明.d.ts
 
-类型声明使Ts中类型代码可以脱离Js而存在，独立于 `*.d.ts` 文件，如
+单独单纯的类型声明文件：把本模块的外部接口的所有类型都写在这个文件里面，便于模块使用者了解接口，也便于编译器检查使用者的用法是否正确。
 
 ```ts
 // 模块声明
@@ -498,7 +605,7 @@ Ts编译主要负责语法降级和类型定义的生成，编译配置类别包
     "skipLibCheck": true,  // 跳过对所有声明文件（.d.ts 文件）的类型检查  
     "target": "ESNext", // TS编译结果的ECMAScript版本：ES5、ES6、ESNext
     "outDir": "dist"  // 输出目录
-    "types": ["node", react"],  // 仅加载 @types/node、@types/react 类型包
+    "types": ["node", "react"],  // 自动加载 @types/node、@types/react 类型包
     // more
     "allowImportingTsExtensions": , // 允许导入.ts和.tsx文件
     "jsx": "react-jsx",  // 指定TS如何处理jsx语法
@@ -507,6 +614,7 @@ Ts编译主要负责语法降级和类型定义的生成，编译配置类别包
     "allowSyntheticDefaultImports": true, // 允许使用默认导入语法，即使模块实际没有默认导出
     "baseUrl": ".",  //  TS编译器解析模块的基准目录，通常与paths使用
     "paths": { "@/*": ["./src/*"] }, // 声明解析别名
+    "include": ["./src", "auto-imports.d.ts"], // 限定编译文件
     "forceConsistentCasingInFileNames": true, // 模块导入时强制文件名大小写一致性
     "sourceMap": true,  // 是否生成源映射文件用于调试
     "plugins": [{ "name": "typescript-plugin-css-modules" }] // ts 插件

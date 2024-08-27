@@ -363,47 +363,6 @@ const UserContext = createContext<User | null>(null);
 const userId: string = user!.uid; // 断言user不为null
 ```
 
-## 模块
-
-```ts
-export interface A {
-  foo: string;
-}
-export let a = 123;
-
-import { type A, a } from './a';
-import type { A } from './a';
-import type * as TypeNS from 'moduleA';
-```
-
-## declare
-
-向TS编译器描述项目外部的类型，只声明不实现
-
-```ts
-// plugins.d.ts
-declare module "qs";
-declare module "nprogress";
-declare module "js-md5";
-declare module "react-transition-group";
-```
-
-使用declare global {}语法，为 JavaScript 引擎的原生对象添加属性和方法
-
-```ts
-// * global
-declare global {
-    interface Window {
-        __REDUX_DEVTOOLS_EXTENSION_COMPOSE__: any;
-    }
-    interface Navigator {
-        msSaveOrOpenBlob: (blob: Blob, fileName: string) => void;
-        browserLanguage: string;
-    }
-}
-export {};
-```
-
 ## 工具类型
 
 前面提到通过泛型实现工具类型，Ts内置了一些工具类型：
@@ -528,9 +487,104 @@ async function getPromise() {
 type Result = Awaited<ReturnType<typeof getPromise>>; // string 类型
 ```
 
+## 模块
+
+```ts
+export interface A {
+  foo: string;
+}
+export let a = 123;
+
+import { type A, a } from './a';
+import type { A } from './a';
+import type * as TypeNS from 'moduleA';
+```
+
+## declare
+
+declare 关键字用来告诉编译器，某个类型是存在的，可以在当前文件中使用。
+
+它的主要作用，就是让当前文件可以使用其他文件声明的类型。如：
+
+向TS编译器描述项目外部的类型，只声明不实现
+
+```ts
+// plugins.d.ts
+declare module "qs";
+declare module "nprogress";
+declare module "js-md5";
+declare module "react-transition-group";
+```
+
+使用declare global {}语法，为 JavaScript 引擎的原生对象添加属性和方法
+
+```ts
+// * global
+declare global {
+    interface Window {
+        __REDUX_DEVTOOLS_EXTENSION_COMPOSE__: any;
+    }
+    interface Navigator {
+        msSaveOrOpenBlob: (blob: Blob, fileName: string) => void;
+        browserLanguage: string;
+    }
+}
+export {};
+```
+
 ## 类型声明.d.ts
 
-单独单纯的类型声明文件：把本模块的外部接口的所有类型都写在这个文件里面，便于模块使用者了解接口，也便于编译器检查使用者的用法是否正确。
+**单纯的**类型声明：只为TS编译器声明类型，不包含实现；
+
+**全局的**类型声明：TS将 `.d.ts` 声明的类型视为全局（文件须在include/files指定范围下）
+
+### 类型来源
+
+除了**模块内声明和导入模块**的类型，TS还会扫描类型声明文件.d.ts作为全局类型
+
+**TypeScript内置类型**
+
+根据 `target`、 `lib` 配置项扫描 `node_modules/typescript/lib/lib.xx.d.ts` 内置类型
+
+**外部类型声明文件**
+
+如果外部库自带 `[vendor].d.ts` 文件，使用这个库可能需要单独加载它的类型声明文件。
+
+否则在官方文档或者 [DefinitelyTyped 仓库](https://github.com/DefinitelyTyped/DefinitelyTyped) 单独安装以 `@types` 空间命名的类型声明npm包
+
+TypeScript 会自动加载 `node_modules/@types` 下作为全局模块，相关配置：
+
+```json
+"compilerOptions": {
+  "typeRoots": ["./typings", "./vendor/types"] // 修改自动加载作为全局模块路径
+}
+```
+
+TypeScript 会自动加载 `typeRoots` 目录里的所有模块，`types`指定仅加载模块：
+
+```json
+"compilerOptions": {
+  "types": ["node", "express"]
+}
+```
+
+**tsconfig.json**
+
+配置项：include，files 下项目的 `xx.d.ts` 会作为全局类型
+
+使用 `declaration` 选项，编译器就会在编译时自动生成单独的类型声明文件：
+
+```json
+"compilerOptions": {
+  "declaration": true
+}
+```
+
+```shell
+tsc index.ts --declaration
+```
+
+**配合declare关键字**
 
 ```ts
 // 模块声明
@@ -542,18 +596,26 @@ declare module App {
 declare var window: Window & typeof globalThis;
 ```
 
-生成类型声明文件：
+### 模块发布
 
-```shell
-tsc index.ts --declaration
-```
+在ts开发的npm，如果包含自己的类型声明文件，一般放在项目根目录下 `index.d.ts`文件
 
-在ts开发的npm，需告知类型声明文件位置
+使TS能够在库被引入时，根据 `index.d.ts` 获取类型信息；
+
+通过 package.jsopn 的`types` 或 `typings` 配置字段，自定义类型声明文件位置：
 
 ```json
 {
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts", // 包的类型声明文件
+}
+```
+
+如果类型声明发布为单独 npm 包，须额外指定：
+
+```json
+"dependencies": {
+  "@types/browserify": "latest"
 }
 ```
 
@@ -594,18 +656,18 @@ Ts编译主要负责语法降级和类型定义的生成，编译配置类别 `t
 
 **outDir：** 输出目录
 
-**types：** 仅加载指定类型定义包
+**types：** 仅加载指定类型定义包，未指定下加载@types下所有包；也支持指定额外加载类型，如 `"types": ["vite/client"]`
 
 ```json
 {
   "compilerOptions": {
-    "module": "ESNext"/"commonjs",  // TS生成的模块代码的格式
+    "module": "ESNext"/"commonjs",  // TS生成代码的模块规范
     "moduleResolution": "Bundler",  // 指定TS如何解析模块导入，Node/Bundler
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],  // 定义可用的全局变量和类型的库文件
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],  // 指定加载内置类型库，未指定下target计算
     "skipLibCheck": true,  // 跳过对所有声明文件（.d.ts 文件）的类型检查  
     "target": "ESNext", // TS编译结果的ECMAScript版本：ES5、ES6、ESNext
     "outDir": "dist"  // 输出目录
-    "types": ["node", "react"],  // 自动加载 @types/node、@types/react 类型包
+    "types": ["node", "react"],  // 仅加载 @types/node、@types/react 类型包
     // more
     "allowImportingTsExtensions": , // 允许导入.ts和.tsx文件
     "jsx": "react-jsx",  // 指定TS如何处理jsx语法
@@ -615,6 +677,7 @@ Ts编译主要负责语法降级和类型定义的生成，编译配置类别 `t
     "baseUrl": ".",  //  TS编译器解析模块的基准目录，通常与paths使用
     "paths": { "@/*": ["./src/*"] }, // 声明解析别名
     "include": ["./src", "auto-imports.d.ts"], // 限定编译文件
+    "files": ["global.d.ts"], // 限定编译文件(不支持目录)
     "forceConsistentCasingInFileNames": true, // 模块导入时强制文件名大小写一致性
     "sourceMap": true,  // 是否生成源映射文件用于调试
     "plugins": [{ "name": "typescript-plugin-css-modules" }] // ts 插件

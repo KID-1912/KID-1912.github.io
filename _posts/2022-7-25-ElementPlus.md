@@ -234,3 +234,14 @@ import AppSidebar from "./sidebar/sidebar.vue";
   background
 ></el-pagination>
 ```
+
+## Issues
+
+**下拉菜单边框**
+
+```scss
+.el-dropdown:focus-visible,
+.el-button:focus-visible {
+  outline: none;
+}
+```

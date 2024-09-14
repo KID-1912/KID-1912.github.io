@@ -85,3 +85,39 @@ ReactDOM.createRoot(container).render(
 ```
 
 ## 组件
+
+### App
+
+全局提供 React context 的 `message`、`Modal`、`notification` 静态方法，支持全局配置
+
+```tsx
+import App from "./App.tsx";
+import { App as AntdApp } from "antd";
+import "virtual:windi.css";
+import { ConfigProvider } from "antd";
+
+const container = document.getElementById("root") as HTMLDivElement;
+
+ReactDOM.createRoot(container).render(
+  <React.StrictMode>
+    <ConfigProvider theme={{ cssVar: true, hashed: false }} locale={locale}>
+      <AntdApp className="h-full" notification={{ showProgress: true, duration: 3 }}>
+        <App />
+      </AntdApp>
+    </ConfigProvider>
+  </React.StrictMode>,
+);
+```
+
+**应用内使用：**
+
+```tsx
+export default function Home() {
+  const { message, notification } = App.useApp(); 
+  notification.success({
+     placement: "bottomLeft",
+     message: "1个任务已完成",
+     style: { width: "240px" },
+  });
+}
+```

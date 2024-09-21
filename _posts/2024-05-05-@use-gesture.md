@@ -1,13 +1,13 @@
 ---
 layout:     post
-title:      @use-gesture
-subtitle:   @use-gesture 是一个库，可让您将更丰富的鼠标和触摸事件绑定到任何组件或视图。 
+title:      use-gesture
+subtitle:   use-gesture 是一个库，可让您将更丰富的鼠标和触摸事件绑定到任何组件或视图。 
 date:       2024-05-05
 author:     page
 header-img: img/@use-gesture.jpg
 catalog: true
 tags:
-    - JavaScript
+    - 类库
 ---
 
 # @use-gesture

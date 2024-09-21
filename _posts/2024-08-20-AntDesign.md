@@ -1,13 +1,13 @@
 ---
 layout:     post
-title:      AntDesign
+title:      AntDesign React
 subtitle:   基于 Ant Design 设计体系的 React UI 组件库，适合企业级中后台产品与前台桌面网站。
 date:       2024-07-05
 author:     page
 header-img: img/cropper.png
 catalog: true
 tags:
-    - react
+    - React
 ---
 
 # AntDesign

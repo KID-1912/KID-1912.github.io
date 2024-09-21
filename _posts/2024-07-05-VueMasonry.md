@@ -1,13 +1,13 @@
 ---
 layout:     post
 title:      VueMasonry
-subtitle:   用于瀑布流布局的 Vue.js 指令
+subtitle:   Vue 指令形式的瀑布流布局实现
 date:       2024-07-05
 author:     page
-header-img: img/cropper.png
+header-img: img/vuejs.webp
 catalog: true
 tags:
-    - canvas
+    - vue
 ---
 
 # VueMasonry
@@ -74,4 +74,4 @@ watch(articleList, () => {
 
 `item-selector`：列表项选择器
 
-`transition-duration`：自适应宽度调整布局动画时长（毫秒或"Float s"）
+`transition-duration`：自适应宽度调整布局动画时长（毫秒或"FloatS"）

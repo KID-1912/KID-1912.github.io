@@ -40,6 +40,8 @@ function randomArr(arr, num) {
 
 `Array.from({ length: 4 }, (v, i) => i + 1)`
 
+`new Array(10).fill(null)`
+
 ## Function
 
 ### 闭包

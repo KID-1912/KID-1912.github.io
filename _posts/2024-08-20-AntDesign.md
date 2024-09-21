@@ -1,13 +1,13 @@
 ---
 layout:     post
 title:      AntDesign
-subtitle:   用于瀑布流布局的 Vue.js 指令
+subtitle:   基于 Ant Design 设计体系的 React UI 组件库，适合企业级中后台产品与前台桌面网站。
 date:       2024-07-05
 author:     page
 header-img: img/cropper.png
 catalog: true
 tags:
-    - 类库
+    - react
 ---
 
 # AntDesign
@@ -82,6 +82,42 @@ ReactDOM.createRoot(container).render(
     </ConfigProvider>
   </React.StrictMode>,
 );
+```
+
+### 主题变量
+
+通过配置主题变量（Seed Token），快速生成主题色主题
+
+```tsx
+const theme = { token: { colorPrimary: "#dc4c3e" }, cssVar: true, hashed: false };
+
+ReactDOM.createRoot(container).render(
+  <React.StrictMode>
+    <ConfigProvider theme={theme} locale={locale}>
+      <AntdApp className="h-full" notification={{ showProgress: true, duration: 3 }}>
+        <App />
+      </AntdApp>
+    </ConfigProvider>
+  </React.StrictMode>,
+);
+```
+
+编写项目scss时也可直接/间接使用主题变量，实现样式统一
+
+```sass
+// variable.scss
+$primaryColor: var(--ant-color-primary);
+```
+
+```sass
+@use "@/assets/styles/variable.scss" as *;
+
+.add-task-item:hover {
+  color: $primaryColor;
+}
+.add-task-item:hover {
+  color: var(--ant-color-primary);
+}
 ```
 
 ## 组件

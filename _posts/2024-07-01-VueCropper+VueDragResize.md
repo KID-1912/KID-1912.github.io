@@ -7,7 +7,7 @@ author:     page
 header-img: img/cropper.png
 catalog: true
 tags:
-    - canvas
+    - vue
 ---
 
 # VueCropper + VueDragResize

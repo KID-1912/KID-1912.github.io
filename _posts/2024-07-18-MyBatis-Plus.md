@@ -7,7 +7,7 @@ author:     page
 header-img: img/MySQL.png
 catalog: true
 tags:
-    - SQL
+    - MySQL
 ---
 
 # MyBatis-Plus

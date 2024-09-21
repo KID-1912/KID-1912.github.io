@@ -7,7 +7,7 @@ author:     page
 header-img: img/MySQL.png
 catalog: true
 tags:
-    - Springboot
+    - Java
 ---
 
 # Spring Security

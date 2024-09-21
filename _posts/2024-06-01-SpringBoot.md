@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      Java
+title:      SpringBoot
 subtitle:   
 date:       2024-06-01
 author:     page

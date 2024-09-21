@@ -11,14 +11,14 @@ github_repo: "https://github.com/KID-1912/KID-1912.github.io.git" # you code rep
 
 # Sidebar settings
 sidebar: true # whether or not using Sidebar.
-sidebar-about-description: "coding改变生活，技术改变世界。"
+sidebar-about-description: "弱者道之动 反者道之用"
 sidebar-avatar: /img/user.jpg # use absolute URL, seeing it's used in both `/` and `/about/`
 
 # SNS settings
 RSS: false
-weibo_username: 6591691052
-zhihu_username: hei-yu-tong-xue
-github_username: KID-1912
+#weibo_username: 6591691052
+#zhihu_username: hei-yu-tong-xue
+#github_username: KID-1912
 #facebook_username:  暂无
 #jianshu_username:   暂无
 #twitter_username:   暂无

@@ -157,3 +157,49 @@ export default function Home() {
   });
 }
 ```
+
+### Form
+
+#### useForm
+
+通过 `useForm` hook，访问/操作表单状态
+
+```tsx
+const [form] = Form.useForm();
+
+return (
+  <Form form={form}>
+    ...
+  </Form>
+)
+```
+
+**form.getFieldsValue()**：获取表单字段值
+
+**form.resetFields()**：重置表单字段值为 `initialValues`
+
+### Select
+
+#### 自定义option.label
+
+```tsx
+function ColorLabel(props: { name: string; color: string }) {
+  return (
+    <div className="flex items-center">
+      <div className="icon-circle mr-12px" style={{ backgroundColor: props.color }}></div>
+      {props.name}
+    </div>
+  );
+}
+```
+
+```tsx
+<Select
+  className={styles["select-color-label"]}
+  options={PROJECT_COLOR.map((item) => ({
+    className: styles["select-color-label"],
+    label: <ColorLabel name={item.name} color={item.color} />,
+    value: item.color,
+  }))}
+></Select>
+```

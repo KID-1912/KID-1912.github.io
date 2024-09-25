@@ -12,7 +12,7 @@ tags:
 
 # TypeScript开发
 
-**CSS Module**
+## CSS Module
 
 默认无法将 CSS/SCSS Modules作为TypeScript有效类型，需要额外声明类型：
 

@@ -1,7 +1,7 @@
 ---
 layout:     post
-title:      TypeScript
-subtitle:   在 JavaScript 的所有功能之上添加了一层： TypeScript 的类型系统
+title:      TypeScript开发
+subtitle:   TypeScript开发汇总
 date:       2024-8-21
 author:     page
 header-img: img/TypeScript.png

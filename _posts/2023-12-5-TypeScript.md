@@ -173,6 +173,18 @@ const handle = (p1: string): undefined {
 }
 ```
 
+### 类型别名/接口的函数
+
+```ts
+type Add = (x: number, y: number) => number;
+interface Add {
+  (x: number, y: number): number;
+}
+interface api {
+  request(path: string): Promise<any>
+}
+```
+
 ### 函数重载
 
 Ts实现了类型层面的重载，罗列函数参数所有类型组合

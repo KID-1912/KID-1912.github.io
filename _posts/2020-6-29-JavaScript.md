@@ -293,7 +293,7 @@ Promise语法糖，await 后代码将作为 promise 回调处理
 ```js
 const result = [];
 for(const id in list){
-  const item = await fetch({id}; // 统一执行环境下多个await，阻塞
+  const item = await fetch({id}; // 同一执行环境下多个await，阻塞
   result.push(item);
 }
 return result;

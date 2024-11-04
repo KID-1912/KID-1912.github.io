@@ -21,7 +21,7 @@ tags:
 ### Install
 
 ```shell
-npm install vue-cropper@next";
+npm install vue-cropper@next
 ```
 
 ### Usage

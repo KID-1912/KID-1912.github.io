@@ -873,7 +873,7 @@ export default {
 
 ### InfiniteScroll无限滚动
 
-```vue
+```html
 <div
   v-infinite-scroll="loadData"
   infinite-scroll-distance="40"
@@ -891,7 +891,7 @@ export default {
 
 **注：** 滚动容器必须具备有效高度
 
-**参考**
+#### 滚动加载
 
 ```js
 const loading = ref(false);
@@ -920,6 +920,42 @@ const loadData= (pageIndex) => {
   <el-button icon="Loading" text>加载中...</el-button>
 </div>
 <div v-else-if="isEnd">已经到底了~</div>
+```
+
+#### 外页滚动
+
+**监听外页滚动**
+
+```html
+<div
+  v-infinite-scroll="handleScrollEnd"
+  class="h-full overflow-auto pr-12px"
+  infinite-scroll-distance="30"
+  infinite-scroll-immediate="false"
+>
+  <EventRecord />
+</div>
+```
+
+```js
+const handleScrollEnd = () => {
+  emitter.emit("UserProfilePageScrollEnd");
+};
+```
+
+**内页处理**
+
+```js
+const onScrollEnd = () => {
+  if (isEnd.value || loading.value) return;
+  getEventListWithPageIndex(pager.value.pageIndex + 1);
+};
+onMounted(() => {
+  emitter.on("UserProfilePageScrollEnd", onScrollEnd);
+});
+onUnmounted(() => {
+  emitter.off("UserProfilePageScrollEnd", onScrollEnd);
+});
 ```
 
 ### ImageViewer图片预览

@@ -135,7 +135,7 @@ new Route({
 - `to`：指向路由路径及对应组件
 - `tag`：渲染< router-link>为指定元素，默认为a标签
 - `replace`：是否启用replace
-- `router-link-active`：指定< router-link>激活状态下添加辅助类，等同在 `router/index.js` 下配置路由对象Router的属性 `linkActiveClass`
+- `router-link-active`：指定< router-link>激活状态下添加辅助类，等同在`router/index.js` 下配置路由对象Router的属性 `linkActiveClass`
 
 ## router-view
 

@@ -531,7 +531,7 @@ declare module "react-transition-group";
 使用declare global {}语法，为 JavaScript 引擎的原生对象添加属性和方法
 
 ```ts
-// * global
+// * global 拓展全局类型
 declare global {
     interface Window {
         __REDUX_DEVTOOLS_EXTENSION_COMPOSE__: any;
@@ -541,7 +541,7 @@ declare global {
         browserLanguage: string;
     }
 }
-export {};
+export {}; // 标识
 ```
 
 ## 类型声明.d.ts
@@ -688,7 +688,6 @@ Ts编译主要负责语法降级和类型定义的生成，编译配置类别 `t
     "allowSyntheticDefaultImports": true, // 允许使用默认导入语法，即使模块实际没有默认导出
     "baseUrl": ".",  //  TS编译器解析模块的基准目录，通常与paths使用
     "paths": { "@/*": ["./src/*"] }, // 声明解析别名
-    "include": ["./src", "auto-imports.d.ts"], // 限定编译文件
     "files": ["global.d.ts"], // 限定编译文件(不支持目录)
     "forceConsistentCasingInFileNames": true, // 模块导入时强制文件名大小写一致性
     "sourceMap": true,  // 是否生成源映射文件用于调试
@@ -699,6 +698,7 @@ Ts编译主要负责语法降级和类型定义的生成，编译配置类别 `t
     "resolveJsonModule": true,
     "isolatedModules": true,
   }
+  "include": ["./src", "auto-imports.d.ts"], // 限定编译文件
 }
 ```
 

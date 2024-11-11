@@ -308,6 +308,12 @@ let status: Status<string> = 'success'
 function fun<T>(param: T): T {
   return param
 }
+
+// 箭头函数使用泛型
+const createList = <T>(): T[] => {
+  return [];
+};
+let stringList = createList<string>();
 ```
 
 ## 类型断言
@@ -596,7 +602,7 @@ TypeScript 会自动加载 `typeRoots` 目录里的所有模块，`types`指定�
 tsc index.ts --declaration
 ```
 
-**配合declare关键字**
+**配合declare关键字自己声明**
 
 ```ts
 // 模块声明

@@ -166,7 +166,7 @@ function throttle(fun, delay) {
 
 **call实现**
 
-```
+```js
 Function.prototype.hycall = function(thisArg, ...args) {
   // 1.获取需要被执行的函数
   var fn = this
@@ -186,7 +186,7 @@ Function.prototype.hycall = function(thisArg, ...args) {
 
 **apply实现**
 
-```
+```js
 Function.prototype.hyapply = function(thisArg, argArray) {
   // 1.获取到要执行的函数
   var fn = this
@@ -262,11 +262,17 @@ ES7新方法，设置字符串最小长度，不足部分用指定字符填充
 
 ## Math
 
-`Math.ceil()`向上取整
+`Math.ceil()` 向上取整
 
-`Math.floor()`向下取整
+`Math.floor()` 向下取整
 
-`Math.round()`四舍五入取整
+`Math.round()` 四舍五入取整
+
+`Math.pow(x, n)` 求幂，等价于 `x ** n`
+
+## 操作符
+
+`??` 空值（null、undefined）合并
 
 ## Date
 
@@ -286,14 +292,14 @@ function getDiffTime(timeStamp) {
 
 ## Promise
 
-## async/await
+### async/await
 
 Promise语法糖，await 后代码将作为 promise 回调处理
 
 ```js
 const result = [];
 for(const id in list){
-  const item = await fetch({id}; // 同一执行环境下多个await，阻塞
+  const item = await fetch({id}); // 同一执行环境下多个await，阻塞
   result.push(item);
 }
 return result;

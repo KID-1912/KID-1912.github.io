@@ -20,5 +20,13 @@ tags:
 
 **typescript-plugin-css-modules**
 
- 使TypeScript 项目中支持 CSS 模块，更能提供自动补全，vscode 需额外设置：
+ 使TypeScript 项目中支持 CSS 模块，更能提供自动补全的插件：
+
+```json
+"compilerOptions": {
+  "plugins": [{ "name": "typescript-plugin-css-modules" }]
+}
+```
+
+vscode 需额外设置：
  `"typescript.tsserver.pluginPaths": ["typescript-plugin-css-modules"]`

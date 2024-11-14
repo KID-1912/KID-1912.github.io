@@ -434,6 +434,10 @@ empty(空数据占位)
 #### 单选行
 
 - 列内容为单选框组件 `Radio` 简单实现
+  
+  ```html
+  <el-radio :value="selectActivity.aid" :label="row.name"></el-radio>
+  ```
 
 - 或采用多选行，选择操作后手动实现仅单选
 

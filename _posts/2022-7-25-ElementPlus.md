@@ -30,26 +30,47 @@ tags:
 
 ## 主题
 
-**SCSS 变量**
+### SCSS 变量
 
 新建 `src/assets/styles/element.variable.scss`，编写scss变量覆盖；详见 [主题 ](https://element-plus.org/zh-CN/guide/theming.html)
 
 ```scss
 // https://github.com/element-plus/element-plus/blob/dev/packages/theme-chalk/src/common/var.scss
+@use 'element-plus/theme-chalk/src/mixins/function.scss' as *;
+
 @forward "element-plus/theme-chalk/src/common/var.scss" with (
   $colors: (
-    "primary": (
-     'base': #EC1620,
-    ),
+    'primary': (
+      'base': #EC1620,
+    ),
   ),
   $text-color: (
-    "regular": #333333,
-  )
+    "regular": #444444,
+    'primary': #666666
+  ),
+  $border-radius: (
+    "base": 4px,
+  ),
+  $border-color: (
+    '': #D9D9D9,
+    'lighter': #EBEDF0,
+  ),
+  $button: (
+    'text-color': getCssVar('text-color', 'primary'),
+    'hover-link-text-color': getCssVar('color-primary'),
+  ),
+  $dropdown: (
+    'menu-box-shadow': 0px 2px 8px 1px rgba(0,0,0,0.1),
+    'menuItem-hover-color': getCssVar('text-color', 'primary'),
+    'menuItem-hover-fill': #f4f7fa,
+  ),
+  $date-editor: (
+    "daterange-width": 300px,
+  ),
 );
-
-// 全局导入，按需导入则忽略这行
-@use "element-plus/theme-chalk/src/index.scss" as *;
 ```
+
+**引入变量**
 
 ```js
 // vite.config.js
@@ -63,22 +84,29 @@ tags:
     },
 ```
 
-**注**：如果项目使用了 `unplugin/vue-components` 自动导入，需设置：
+**注**：如果项目使用了 `unplugin/vue-components` 自动按需导入组件样式，可能导致组件不生效，需关闭按需引入组件样式并引入全局样式：
 
 ```js
 AutoImport({
   // .....
-  resolvers: [ElementPlusResolver({ importStyle: "sass" })],
+  resolvers: [ElementPlusResolver({ importStyle: false })],
 }),
 Components({
   resolvers: [
-    ElementPlusResolver({ importStyle: "sass" }), 
+    ElementPlusResolver({ importStyle: false }),
        // ......
     ]
 })
 ```
 
-**CSS变量**
+**引入全部样式文件**
+
+```scss
+// element-plus.scss
+@use "element-plus/theme-chalk/src/index.scss" as *;
+```
+
+### CSS变量
 
 为元素类声明 css 变量覆盖基础值，适用于单独为某个组件实例定义样式；
 
@@ -88,9 +116,12 @@ Components({
 }
 ```
 
-**ElementPlus类**
+### ElementPlus类
+
+编写 element-plus 样式覆盖，masn入口引入
 
 ```scss
+// element-plus.scss
 .el-dialog {
   --el-dialog-border-radius: var(--el-border-radius-base);
 }
@@ -104,7 +135,7 @@ Components({
 }
 ```
 
-## Icon
+## Icon(图标)
 
 ### 基本使用
 
@@ -212,7 +243,7 @@ vite详见  [element-plus-best-practices](https://github.com/sxzz/element-plus-b
 
 自动导入插件 [unplugin-icons](https://github.com/antfu/unplugin-icons)
 
-### Layouts
+## Layouts(布局)
 
 ```html
 <script setup>
@@ -242,7 +273,7 @@ import AppSidebar from "./sidebar/sidebar.vue";
 </style>
 ```
 
-## 分页
+## 分页(Pagination)
 
 推荐使用 `@update:current-page` 替代 `@current-page`
 
@@ -256,6 +287,108 @@ import AppSidebar from "./sidebar/sidebar.vue";
   background
 ></el-pagination>
 ```
+
+**分页Hook封装**
+
+```js
+export const useActivityManageList = (filter, pager) => {
+  filter = ref(filter)
+  pager = ref(pager);
+  const activityList = ref([]);
+  const loading = ref(false);
+  const getActivityList = async () => {
+    if (loading.value) return;
+    const params = {
+      pageIndex: pager.value.pageIndex,
+      pageSize: pager.value.pageSize,
+      ...toValue(filter),
+    };
+    loading.value = true;
+    try {
+      const { data } = await api.getActivityManageList(params);
+      activityList.value = data.records;
+      pager.value.pageIndex = data.current;
+      pager.value.pageSize = data.size;
+      pager.value.pageTotal = data.total;
+      pager.value.pageCount = data.pages;
+    } catch (error) {
+      console.warn(error);
+      ElMessage.error("活动数据获取失败");
+    }
+    loading.value = false;
+  };
+
+  return {
+    activityList,
+    loading,
+    getActivityList,
+  };
+}; 
+
+export const usePager = (pagerOptions) => {
+  const pager = ref({
+    pageIndex: pagerOptions.pageIndex ?? 1,
+    pageSize: pagerOptions.pageSize ?? 10,
+    pageTotal: pagerOptions.pageTotal ?? 0,
+    pageCount: pagerOptions.pageCount ?? 0,
+  });
+  return pager;
+};
+
+// 组件使用 
+const pager = usePager();
+const { 
+  activityList,
+  getActivityList,
+  loading
+} = useActivityManageList(params, pager); 
+const getActivityListWithPageIndex = (pageIndex) => {
+  if (loading.value) return;
+  pager.value.pageIndex = pageIndex;
+  getActivityList();
+};
+```
+
+```html
+<el-pagination
+  layout="jumper"
+  :current-page="pager.pageIndex"
+  :page-size="pager.pageSize"
+  :total="pager.pageTotal"
+  background
+  @update:current-page="getActivityListWithPageIndex"
+/>
+```
+
+## Table(表格)
+
+### 固定列适配
+
+表格小屏下固定列实现宽度适配：
+
+```html
+<el-table-column label="标题" min-width="200">
+<el-table-column label="人数" min-width="120">
+<el-table-column label="次数" min-width="120">
+<el-table-column label="操作" fixed="right" min-width="250">
+```
+
+通过 `min-width` 设置小屏下表格列的最小值（大屏会随宽度计算占比）
+
+补充：覆盖样式实现表格宽度最小值，使大屏下表格宽度占满
+
+```scss
+.el-table__header-wrapper{
+  min-width: 100%;
+}
+.el-table__body-wrapper {
+  .el-scrollbar__view, .el-table__body {
+    min-width: 100%;
+  }
+}
+```
+
+
 
 ## Issues
 

@@ -388,15 +388,14 @@ const getActivityListWithPageIndex = (pageIndex) => {
 }
 ```
 
-
-
 ## Issues
 
-**下拉菜单边框**
+### outline bug
+
+dropdown 或 popover 组件展开菜单层，出现黑色的outline
 
 ```scss
-.el-dropdown:focus-visible,
-.el-button:focus-visible {
+[role="button"]:focus-visible {
   outline: none;
 }
 ```

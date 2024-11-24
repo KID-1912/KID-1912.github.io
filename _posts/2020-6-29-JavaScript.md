@@ -91,7 +91,7 @@ console.log(add(1)(2)(3)+1);  // 最终返回的_add自动调用toString的隐�
 
 节流：每隔一定时间执行一次所有触发事件的回调函数
 
-防抖
+**防抖**
 
 ```js
 function debounce(fn,delay){
@@ -105,7 +105,33 @@ function debounce(fn,delay){
 }
 ```
 
-节流（此处待确定）
+**锁定推迟的节流**
+
+```js
+function throttle(fn, delay = 500) {
+  let flag = false; // 是否锁定
+  let next; // 等待锁解除后的回调
+  // 锁定推迟调用
+  function lockCall() {
+    if (next) {
+      next();
+      flag = true;
+      next = undefined;
+      setTimeout(lockCall, delay);
+    } else {
+      flag = false;
+    }
+  }
+
+  return function (...args) {
+    next = fn.bind(...args);
+    if (flag) return;
+    lockCall();
+  };
+}
+```
+
+**计算时间的节流**
 
 ```js
 function throttle(fun, delay) {
@@ -119,7 +145,7 @@ function throttle(fun, delay) {
             deferTimer = setTimeout(function () {
                 last = now
                 fun.apply(that, _args)
-            }, delay)
+            }, last + delay - now) // 清除旧定时器，计算新定时器
         }else {
             last = now
             fun.apply(that,_args)
@@ -128,7 +154,7 @@ function throttle(fun, delay) {
 }
 ```
 
-动画节流
+**动画节流**：按稳定帧率执行
 
 ```js
 function animationThrottle(fun) {
@@ -144,17 +170,15 @@ function animationThrottle(fun) {
 }
 ```
 
-延迟节流
+**延迟节流**：延迟首次调用
 
 ```js
 function throttle(fun, delay) {
     let flag = true;
     return function () {
-        let that = this
-        let _args = arguments
         if (!flag) reutrn;
         setTimeout(function () {
-            fun.apply(that, _args)
+            fun.call(this, ...arguments)
             flag = true;
         }, delay)
         flag = false;

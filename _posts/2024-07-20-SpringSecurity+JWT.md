@@ -636,9 +636,9 @@ public void logout() {
 ```java
 // provider/JwtProvider.java
 
-    // ......
+    // ......
 
-        // 刷新token
+    // 刷新token
     // 过滤器会对请求进行验证，此处不用验证
     public AccessToken refreshToken(String oldToken) {
         String token = oldToken.substring(jwtProperties.getTokenPrefix().length());

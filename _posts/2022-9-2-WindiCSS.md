@@ -26,6 +26,8 @@ npm i windicss-webpack-plugin -D
 
 ### 配置
 
+**webpack**
+
 ```js
 const WindiCSSWebpackPlugin = require('windicss-webpack-plugin');
 ...
@@ -34,6 +36,8 @@ plugins: [
   ...
 ]
 ```
+
+其它构建工具使用见：[Installation | Windi CSS](https://windicss.org/guide/installation.html)
 
 ### 引入虚拟模块
 
@@ -74,7 +78,30 @@ export default defineConfig({
 });
 ```
 
+### 白名单
+
+使用**动态拼接**特性，须显式声明 `safelist` 配置项列举可能的组合：
+
+```html
+<div class="p-${size}"></div>
+```
+
+```js
+import { defineConfig } from 'windicss/helpers'
+function range(size, startAt = 1) {
+  return Array.from(Array(size).keys()).map(i => i + startAt)
+}
+export default defineConfig({
+  safelist: [
+    'p-1 p-2 p-3 p-4',
+    range(10).map(i => `mt-${i}`), // mt-1 to mt-10
+  ]
+})
+```
+
 ### 预检样式
+
+windicss会向页面注入元素的预定义样式
 
 ```js
 preflight: false // 关闭所有预定义样式

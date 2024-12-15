@@ -574,7 +574,7 @@ TypeScript 会自动加载 `node_modules/@types` 下作为全局模块，相关�
 
 ```json
 "compilerOptions": {
-  "typeRoots": ["./typings", "./vendor/types"] // 修改自动加载作为全局模块路径
+  "typeRoots": ["./typings", "./vendor/types"] // 修改自动加载作为全局-+模块路径
 }
 ```
 

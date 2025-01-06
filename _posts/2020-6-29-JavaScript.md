@@ -282,7 +282,9 @@ ES7新方法，设置字符串最小长度，不足部分用指定字符填充
 
 ## Number
 
-`number.toFixed(digits)` 保留小数点位数后数字(以字符串类型返回)
+`number.toFixed(digits)` 四舍五入保留小数点位数后数字(以字符串类型返回)
+
+`parseInt(digits)` 解析出数字的整数部分并返回
 
 ## Math
 

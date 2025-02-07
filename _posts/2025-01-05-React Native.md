@@ -69,6 +69,14 @@ BigButton.android.js
 import BigButton from "./BigButton";
 ```
 
+### 第三方库
+
+RN App应用库： https://reactnative.directory/
+
+RN 社区： https://github.com/react-native-community
+
+Expo官网SDK： https://docs.expo.dev/versions/latest/
+
 ## React Native组件
 
 RN 中对原生视图的封装的组件，如View、Image、Text等[核心组件](https://reactnative.cn/docs/components-and-apis)；除此之外好包括社区组件、自定义的原生组件；
@@ -127,7 +135,7 @@ style props对象属性速查：[https://www.react-native.cn/docs/layout-props](
 
 ### 文字样式
 
-**fontSize**：默认RNApp字号14dp，且所有文字样式支持在Text组件内继承
+**fontSize**：默认RNApp字号14(dp)，支持通过fontSize数字类型值设置，且所有文字样式支持在Text组件内继承
 
 **fontFamily**
 
@@ -167,6 +175,19 @@ IOS：XCode移除 `Info.plist` 文件的字体Font项；然后 Build Phases > Co
 - **优先使用系统默认字体**：如 iOS 的 `San Francisco` 和 Android 的 `Roboto`，判断系统强制设置使用默认字体。
 - **需要一致字体时**：统一设置使用通用字体（如 `Arial`、`Verdana`、 `Courier New`）。
 
+**文字溢出**
+
+```tsx
+<Text
+  style={styles.fundTitleName}
+  numberOfLines={1}
+  ellipsizeMode="tail">
+  招商双债增强债券LOF(C)
+</Text>
+```
+
+`ellipsizeMode`：https://www.react-native.cn/docs/next/text#ellipsizemode
+
 ## 图片
 
 ### 静态图片
@@ -193,3 +214,45 @@ const icon = this.props.active
 ```
 
 必须手动指定图片尺寸，并ios要求https传输安全
+
+## 开发
+
+### 路径别名
+
+tsconfig 配置文件通过配置 compilerOptions.paths [自定义项目引入的别名路径](https://www.react-native.cn/docs/typescript#%E5%9C%A8-typescript-%E4%B8%AD%E4%BD%BF%E7%94%A8%E8%87%AA%E5%AE%9A%E4%B9%89%E8%B7%AF%E5%BE%84%E5%88%AB%E5%90%8D)；
+
+### 模拟设备
+
+**安装/新增模拟设备**
+
+android studio 点击 virtual device加号新增设备，next选择android系统版本(31+/33)安装，重启即列表可见新增设备
+
+**命令行启动**
+
+1. 找到 android studio的SDK目录下emulator目录
+
+2. 添加目录到系统环境变量
+
+3. npm scripts新增运行模拟器命令 `"emulator": "emulator -avd Pixel_5_API_33"`
+
+### RN Inspector
+
+Ctrl + M 快捷键进入
+
+### 真机预览
+
+真机开发者模式下，进入开发者选项开启ADB调试使android studio设备列表显示真机设备
+
+## 第三方库
+
+### nativewind
+
+安装nativewind、初始化tailwind.config.js、增加nativewind/babel预设，CSS引入@tailwind、metro.config.js修改、tsconfig引入nativewind/types
+
+**快速开始**：[https://www.nativewind.dev/getting-started/react-native](https://www.nativewind.dev/getting-started/react-native)
+
+**使用**：
+
+```tsx
+<Text className="font-bold">加粗内容</Text>
+```

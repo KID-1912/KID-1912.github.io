@@ -215,6 +215,78 @@ const icon = this.props.active
 
 必须手动指定图片尺寸，并ios要求https传输安全
 
+## 导航跳转
+
+### React Navigation
+
+https://reactnavigation.org
+
+安装依赖库：`npm install react-native-screens react-native-safe-area-context`
+
+安装核心库：`npm install @react-navigation/native-stack`
+
+安装组件库：`npm install @react-navigation/elements`
+
+**创建导航**
+
+```tsx
+import { createStaticNavigation } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
+const RootStack = createNativeStackNavigator({
+  initialRouteName: 'Home', // 初始路由
+  screens: {
+    Home: HomeScreen,
+  },
+});
+
+const Navigation = createStaticNavigation(RootStack);
+
+export default function App() {
+  return <Navigation />;
+}
+```
+
+**导航配置**
+
+更多配置参数见：https://reactnavigation.org/docs/headers/
+
+**导航跳转**
+
+```tsx
+const Search: React.FC = () => {
+  const navigation = useNavigation();
+  const onPressSearch = () => {
+    navigation.navigate('FundSearch');
+  };
+
+  return (
+    <TouchableWithoutFeedback onPress={onPressSearch}>
+      <View style={styles.search}>
+        <Image
+          source={require('../../../assets/images/icon/icon-search-line.png')}
+          style={styles.iconSearch}
+        />
+      </View>
+    </TouchableWithoutFeedback>
+  );
+};
+```
+
+`navigation.navigate('RouteName')` 进入新路由
+
+`navigation.push('RouteName')` 多次进入新路由（支持原路由多次push）
+
+`navigation.goBack()` 返回上一层
+
+`navigation.popTo('RouteName')` 回退到过去路由
+
+`navigation.popToTop()` 回退到首个路由
+
+### React Native Navigation
+
+https://github.com/wix/react-native-navigation
+
 ## 开发
 
 ### 路径别名
@@ -256,3 +328,9 @@ Ctrl + M 快捷键进入
 ```tsx
 <Text className="font-bold">加粗内容</Text>
 ```
+
+### react-native-safe-area-context
+
+为RN App提供安全区域视图(View)的 react context
+
+https://github.com/AppAndFlow/react-native-safe-area-context

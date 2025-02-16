@@ -125,6 +125,10 @@ style props对象属性速查：[https://www.react-native.cn/docs/layout-props](
 
 **宽高百分比**
 
+**box-sizing**
+
+默认组件box-sizing值为border-box，即当固定宽高的组件声明的padding、border会占据宽高区域；
+
 ### Flexbox布局
 
 `flexDirection` 默认值为 `column`
@@ -132,6 +136,10 @@ style props对象属性速查：[https://www.react-native.cn/docs/layout-props](
 `alignContent` 默认值为 `flex-start` 而非 `stretch`
 
 `flexShrink` 默认值同 `flexGrow` 都为0，即默认不伸缩
+
+### 绝对/相对定位
+
+默认所有组件为relative定位(无需声明)，如果设置组件absolute定位，注意设置zIndex防止被兄弟组件覆盖上层；
 
 ### 文字样式
 
@@ -314,6 +322,56 @@ Ctrl + M 快捷键进入
 ### 真机预览
 
 真机开发者模式下，进入开发者选项开启ADB调试使android studio设备列表显示真机设备
+
+### 沉浸式布局
+
+**重置状态栏**
+
+状态栏透明、状态栏图标颜色模式（light-content/dark-content）
+
+```tsx
+import {StatusBar} from 'react-native';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
+
+const App: React.FC = function () {
+  return (
+    <SafeAreaProvider>
+      <StatusBar
+        translucent
+        backgroundColor="transparent"
+        barStyle="light-content" // 根据背景色调整
+      />
+      <Navigation />
+    </SafeAreaProvider>
+  );
+};
+```
+
+Android请在 `android/app/src/main/res/values/styles.xml` 补充配置：
+
+```xml
+<item name="android:windowTranslucentStatus">true</item>
+```
+
+以支撑 translucent 属性；
+
+**header内容**
+
+为header预留padding/margin，其顶部边距值为insets.top/StatusBar.currentHeight
+
+或者为header设置absolute+zIndex覆盖状态栏（注意为页面内容设置marginTop: header高度）
+
+```ts
+// header.tsx
+  const insets = useSafeAreaInsets();
+
+  const statusBarHeight = Platform.select({
+    ios: insets.top,
+    android: StatusBar.currentHeight,
+  });
+```
+
+
 
 ## 第三方库
 

@@ -77,6 +77,18 @@ RN 社区： https://github.com/react-native-community
 
 Expo官网SDK： https://docs.expo.dev/versions/latest/
 
+### dp单位
+
+React Native使用**密度无关像素**，dp基于160dpi（每英寸物理像素点数）：
+
+即在每英寸160物理像素屏幕上，1dp=1物理像素=1/160英寸
+
+那么每英寸320物理像素屏幕上，1dp=2物理像素=1/160英寸（iphone6/7/8）
+
+所以在没有dp设计图下，我们可以拿到一个375px的web设计图，把它看做是
+
+iPhone6/7/8的界面图（在这些设备上dpr为2，dpi为326，即1px=2物理像素≈1dp），UI宽高边距单位数值等同于dp单位；
+
 ## React Native组件
 
 RN 中对原生视图的封装的组件，如View、Image、Text等[核心组件](https://reactnative.cn/docs/components-and-apis)；除此之外好包括社区组件、自定义的原生组件；
@@ -93,9 +105,29 @@ RN 中对原生视图的封装的组件，如View、Image、Text等[核心组件
 
 **TextInput**：文本输入
 
-### 核心组件
+### 功能组件
 
-App容器
+#### App容器
+
+注册App容器：`AppRegistry.registerComponent(appName, () => App)`
+
+#### StatusBar
+
+通过props控制应用状态栏的组件
+
+```tsx
+<StatusBar
+  translucent
+  backgroundColor="transparent"
+  barStyle="light-content" // 根据背景色调整
+/>
+```
+
+#### SafeAreaView
+
+Reacte Native为IOS流海屏提供的安全区域组件，作为App应用的外层容器自带padding边距，使应用内容在安全范围内展示；
+
+推荐使用更强大的 `react-native-safe-context` （支持横向模式/支持自定义edges）实现SafeArea；
 
 ## 样式
 
@@ -135,7 +167,7 @@ style props对象属性速查：[https://www.react-native.cn/docs/layout-props](
 
 `alignContent` 默认值为 `flex-start` 而非 `stretch`
 
-`flexShrink` 默认值同 `flexGrow` 都为0，即默认不伸缩
+`flexShrink` 默认值同 `flexGrow` 都为0，即默认空间局促下不伸缩
 
 ### 绝对/相对定位
 
@@ -323,7 +355,7 @@ Ctrl + M 快捷键进入
 
 真机开发者模式下，进入开发者选项开启ADB调试使android studio设备列表显示真机设备
 
-### 沉浸式布局
+### 沉浸式导航栏
 
 **重置状态栏**
 
@@ -355,7 +387,7 @@ Android请在 `android/app/src/main/res/values/styles.xml` 补充配置：
 
 以支撑 translucent 属性；
 
-**header内容**
+**安全的header头**
 
 为header预留padding/margin，其顶部边距值为insets.top/StatusBar.currentHeight
 
@@ -364,14 +396,16 @@ Android请在 `android/app/src/main/res/values/styles.xml` 补充配置：
 ```ts
 // header.tsx
   const insets = useSafeAreaInsets();
+  // 非必要
+  // const statusBarHeight = Platform.select({
+  //   ios: insets.top,
+  //   android: StatusBar.currentHeight,
+  // });
 
-  const statusBarHeight = Platform.select({
-    ios: insets.top,
-    android: StatusBar.currentHeight,
-  });
+  return (
+    <View style={[styles.header, {paddingTop: insets.top}]}></View>
+  );
 ```
-
-
 
 ## 第三方库
 
@@ -389,6 +423,6 @@ Android请在 `android/app/src/main/res/values/styles.xml` 补充配置：
 
 ### react-native-safe-area-context
 
-为RN App提供安全区域视图(View)的 react context
+为RN App提供安全区域视图(View)的 react context（SafeAreaProvider+useSafeAreaInsets）和组件（SafeAreaView）
 
 https://github.com/AppAndFlow/react-native-safe-area-context

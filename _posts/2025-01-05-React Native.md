@@ -215,6 +215,10 @@ IOS：XCode移除 `Info.plist` 文件的字体Font项；然后 Build Phases > Co
 - **优先使用系统默认字体**：如 iOS 的 `San Francisco` 和 Android 的 `Roboto`，判断系统强制设置使用默认字体。
 - **需要一致字体时**：统一设置使用通用字体（如 `Arial`、`Verdana`、 `Courier New`）。
 
+**lineHeight**
+
+默认存在字号1.x的行高值，建议显示设置1.25以上行高（垂直居中且防截断）
+
 **文字溢出**
 
 ```tsx
@@ -254,6 +258,38 @@ const icon = this.props.active
 ```
 
 必须手动指定图片尺寸，并ios要求https传输安全
+
+### 图标
+
+**字体图标**
+
+`react-native-vector-icons` 快速在RN中底层以字体图标方式使用第三方图标(如ant-design)；推荐使用第三方图标库时采用。
+
+自定义的字体图标：将svg格式图标集合转为字体文件，通过 [vector-icons](https://github.com/oblador/react-native-vector-icons?tab=readme-ov-file#custom-fonts) 自定义每个字符的图标name；
+
+svg转字体文件工具：[icomoon](https://icomoon.io/app/#/select) [fontello](https://fontello.com/)
+
+**SVG图标**
+
+`react-native-svg` + `react-native-svg-transformer` 实现在RN中直接引入svg文件作为SvgComponent；
+
+1. `metro.config.js` 新增transformer/resolver配置，见 [use-with-svg-files](https://github.com/software-mansion/react-native-svg/blob/main/USAGE.md#use-with-svg-files)
+
+2. `babel.config.js` extensions选项新增 “.svg” 支持svg转换
+
+3. typescript 新增svg模块文件的类型声明 [using-typescript](https://github.com/kristerkari/react-native-svg-transformer?tab=readme-ov-file#using-typescript)
+
+使用：
+
+```tsx
+import IconMcSearchLine from '@/assets/images/svg/mcSearchLine.svg';
+<IconMcSearchLine
+  style={styles.iconMcSearchLine}
+  color="#141736"
+  width={18}
+  height={18}
+></IconMcSearchLine>
+```
 
 ## 导航跳转
 
@@ -326,6 +362,8 @@ const Search: React.FC = () => {
 ### React Native Navigation
 
 https://github.com/wix/react-native-navigation
+
+## 动画
 
 ## 开发
 

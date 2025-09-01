@@ -365,6 +365,32 @@ https://github.com/wix/react-native-navigation
 
 ## 动画
 
+## 存储
+
+### Async Storage
+
+RN 中与 Web 的 Local Storage 类似的功能，一个异步、未加密的键值对存储API；
+
+**安装**
+
+```shell
+npm install @react-native-async-storage/async-storage
+```
+
+**存储/读取**
+
+```ts
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const json = JSON.stringify(this.favoriteList);
+await AsyncStorage.setItem('@favorite_funds', json);
+ 
+const json = await AsyncStorage.getItem('@favorite_funds');
+if (json) this.favoriteList = JSON.parse(json);
+```
+
+
+
 ## 开发
 
 ### 路径别名

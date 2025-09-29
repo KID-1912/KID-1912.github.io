@@ -339,6 +339,10 @@ function changeOwnerAddress(address _address) external onlyOwner {
 }
 ```
 
+#### 重载
+
+即名字相同但输入**参数类型不同**的函数可以同时存在，视为不同函数被外部使用；
+
 ### 控制流
 
 与javascript一致
@@ -521,22 +525,13 @@ contract interactBAYC {
         BAYC.safeTransferFrom(from, to, tokenId);
     }
 }
-
 ```
 
 ## 异常
 
 **revert Error**
 
-在 Solidity 中，`error`类型确实支持在报错时​**​附带错误提示信息​**​，但需要明确以下几点：
-
----
-
-### 1. ​**​Solidity 的 `error`机制​**​
-
- Solidity 0.8.4 引入了 `error`类型，用于​**​高效且低成本地回滚交易并传递错误信息​**​。
-
-定义异常
+定义异常：
 
 ```solidity
 error TransferNotOwner(address sender); // 自定义参数的带错误信息的error
@@ -544,7 +539,7 @@ error TransferNotOwner(address sender); // 自定义参数的带错误信息的e
 
 `error`可以定义参数，这些参数会在交易回滚时被记录在链上（但不会消耗 gas 存储）;
 
-使用：异常并回退
+抛出异常并回退
 
 ```solidity
 function transferOwner1(uint256 tokenId, address newOwner) public {

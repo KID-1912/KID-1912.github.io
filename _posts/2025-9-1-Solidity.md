@@ -363,7 +363,7 @@ event关键字 +事件名称 + 事件记录的变量
 event Transfer(address indexed from, address indexed to, uint value);
 ```
 
-`indexed`关键字的变量会保存在以太坊虚拟机日志的`topics`中方便检；
+`indexed`关键字的变量会保存在以太坊虚拟机日志的`topics`中方便检索；
 
 **释放/发送事件**
 
@@ -537,7 +537,7 @@ contract interactBAYC {
 error TransferNotOwner(address sender); // 自定义参数的带错误信息的error
 ```
 
-`error`可以定义参数，这些参数会在交易回滚时被记录在链上（但不会消耗 gas 存储）;
+`error`可以定义参数，这些参数会在交易回滚时被记录在链上（不会作为状态 gas 存储）;
 
 抛出异常并回退
 
@@ -550,6 +550,8 @@ function transferOwner1(uint256 tokenId, address newOwner) public {
 }
 ```
 
+gas：条件不满足时回滚，退还剩余 Gas（除已消耗的）
+
 **Require**
 
 ```solidity
@@ -561,11 +563,26 @@ function transferOwner2(uint256 tokenId, address newOwner) public {
 
 **Assert**
 
-不能描述异常版的`Require`
+不能描述异常版的`Require`，不退还 Gas（EIP-150 前）
 
 ```solidity
 function transferOwner3(uint256 tokenId, address newOwner) public {
     assert(_owners[tokenId] == msg.sender);
     _owners[tokenId] = newOwner;
+}
+```
+
+**回滚**：当前交易（transaction）中所有的状态变更回滚
+
+**error交易receipt**
+
+```js
+{
+  status: 0,              // 0 表示失败（revert）
+  gasUsed: 21000,         // 实际消耗的 Gas
+  logs: [],              // 事件日志（revert 时为空）
+  // ⭐ Error 信息存储在这里：
+  logsBloom: "0x...",     // Bloom 过滤器（包含error签名）
+  // 但详细的 error 参数不直接存储！
 }
 ```
